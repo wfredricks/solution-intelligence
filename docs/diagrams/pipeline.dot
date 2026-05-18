@@ -45,6 +45,9 @@ digraph SI_Pipeline {
   fontname="Helvetica";
 
   /* Default node style: rectangle with icon-above-label */
+  /* Default node style: uniform-size rectangles, icon top-center, label below.
+   * fixedsize=true + width/height forces EVERY box to the same dimensions,
+   * regardless of label length — the P&ID grid aesthetic Bill asked for. */
   node [
     shape=box,
     style="filled,rounded",
@@ -56,7 +59,10 @@ digraph SI_Pipeline {
     margin="0.25,0.25",  /* x,y padding around label */
     imagescale=true,
     imagepos="tc",       /* image top-center; label sits below with breathing room */
-    labelloc="b"
+    labelloc="b",
+    fixedsize=true,      /* force every node to the exact width/height below */
+    width=2.4,           /* uniform width — fits longest label cleanly */
+    height=2.0           /* uniform height — room for icon + 2-3 lines of label */
   ];
 
   /* Default edge style: orthogonal, dark grey, bold */
@@ -75,9 +81,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/Storage_Bucket_Reverse.svg",
     fillcolor="#E3F2FD",
     color="#1976D2",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   parsers [
@@ -85,9 +89,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   dsl [
@@ -96,9 +98,7 @@ digraph SI_Pipeline {
     fillcolor="#FFFDE7",
     color="#F57F17",
     style="filled,rounded,dashed",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   graphloader [
@@ -106,9 +106,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   /* ── Bottom row: production side ─────────────────────────────── */
@@ -118,9 +116,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/Database_Graph_Reverse.svg",
     fillcolor="#EDE7F6",
     color="#4A148C",
-    penwidth=3,
-    width=2.2,
-    height=1.8
+    penwidth=3
   ];
 
   graphreader [
@@ -128,9 +124,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   output_bucket [
@@ -138,9 +132,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/Storage_Bucket_Reverse.svg",
     fillcolor="#E8F5E9",
     color="#388E3C",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   window [
@@ -148,9 +140,7 @@ digraph SI_Pipeline {
     image="../../../../inputs/icons/_half/General_Dashboard_Reverse.svg",
     fillcolor="#E1F5FE",
     color="#0277BD",
-    penwidth=2,
-    width=2.2,
-    height=1.8
+    penwidth=2
   ];
 
   /* ── Row groupings: force two rows ──────────────────────────── */
