@@ -11,52 +11,9 @@ This document is the **picture** of how an SI project moves data from raw custom
 
 ## The pipeline (one project)
 
-```
-                                  ┌──────────────────────────────────────┐
-                                  │              SI/I  IDENTITY          │
-                                  │  authenticates every operator action │
-                                  │  consulted by SI/S and SI/W          │
-                                  └──────────────────────────────────────┘
-                                                    │
-   ┌────────────┐    ┌──────────────────────────────┴──────────────────────────────┐    ┌────────────┐
-   │ ① INPUT    │    │                 SI/S  STUDIO                                │    │  ⑦ WINDOW   │
-   │   BUCKET   ├───►│         (the BB substrate + developer UI)                   │    │   SI/W      │
-   │            │    │                                                             │    │            │
-   │ S3 with    │    │  ②           ③               ④             ⑤              │    │            │
-   │ codebase + │    │  Parsers ──► GraphLoader ──► SI/G ──► GraphReader ──┐      │    │ Browse the │
-   │ design     │    │  (Tree-      (sole writer    (durable   (sole       │      │    │ output     │
-   │ docs +     │    │  sitter,     to SI/G;        typed       producer of│      │    │ bucket as  │
-   │ RFPs +     │    │  ANTLR,      validates       knowledge   deliverables│     │    │ a curated  │
-   │ logs +     │    │  PDF,        DSL against    graph)       per template)     │    │ UI; role-  │
-   │ SME notes  │    │  markdown)   schema)         │              │       │      │    │ scoped     │
-   │            │    │      │       ▲              │              │       │      │    │ views per  │
-   │            │    │      │       │ promotes     │              │       │      │    │ SI/I role  │
-   │            │    │      ▼       │              │              │       │      │    │            │
-   │            │    │   .sigdsl ───┘  ┌────────┐  │  analysts    │       │      │    │            │
-   │            │    │   stream        │  BB    │◄─┘  (read SI/G, │       │      │    │            │
-   │            │    │   (JSONL,    ◄──┤substr- │     post to BB) │       │      │    │            │
-   │            │    │    schema-      │  ate   │                 │       │      │    │            │
-   │            │    │   validated)    └────────┘                 │       │      │    │            │
-   │            │    │                                            │       │      │    │            │
-   │            │    │     ┌────── chainblocks ledger ──────┐     │       │      │    │            │
-   │            │    │     │   audits every transition       │     │       │      │    │            │
-   │            │    │     │   above, with user attribution  │     │       │      │    │            │
-   │            │    │     └─────────────────────────────────┘     │       │      │    │            │
-   │            │    └─────────────────────────────────────────────┼───────┘      │    │            │
-   │            │                                                  │              │    │            │
-   └────────────┘                                                  ▼              │    │            │
-                                                          ┌─────────────────┐     │    │            │
-                                                          │ ⑥ OUTPUT BUCKET │◄────┘    │            │
-                                                          │                 │          │            │
-                                                          │  git tree:      ├──────────┤  reads     │
-                                                          │   reports/      │          │  from      │
-                                                          │   graph/        │          │  bucket    │
-                                                          │   dsl/          │          │            │
-                                                          │   derived/      │          │            │
-                                                          │   audit/        │          │            │
-                                                          │   README.md     │          │            │
-                                                          └─────────────────┘          └────────────┘
-```
+![Solution Intelligence pipeline](diagrams/pipeline.svg)
+
+*Diagram source: [`diagrams/pipeline.d2`](diagrams/pipeline.d2). Regenerate with `d2 diagrams/pipeline.d2 diagrams/pipeline.svg`. Edit the `.d2`; do not edit the `.svg` directly.*
 
 ---
 

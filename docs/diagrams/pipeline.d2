@@ -1,0 +1,190 @@
+# Solution Intelligence — Runtime Pipeline
+#
+# Renders to docs/diagrams/pipeline.svg
+# Build: d2 pipeline.d2 pipeline.svg
+#
+# This diagram is the picture-counterpart to docs/PIPELINE.md.
+# Source-of-truth lives here; the SVG is regenerated from this file.
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+direction: right
+
+# ── External buckets ─────────────────────────────────────────────────────
+
+input_bucket: "① Input Bucket\n(S3)" {
+  shape: cylinder
+  style: {
+    fill: "#E3F2FD"
+    stroke: "#1976D2"
+    stroke-width: 2
+    bold: true
+  }
+  tooltip: "Customer's raw data: codebase, design docs, RFPs, logs, SME notes"
+}
+
+output_bucket: "⑥ Output Bucket\n(git-folder tree)" {
+  shape: cylinder
+  style: {
+    fill: "#E8F5E9"
+    stroke: "#388E3C"
+    stroke-width: 2
+    bold: true
+  }
+  tooltip: "Deliverables: reports/, graph/, dsl/, derived/, audit/, README.md"
+}
+
+# ── Identity overlay ─────────────────────────────────────────────────────
+
+identity: "SI/I — Identity\n(bangauth / OIDC)\nauthenticates every action" {
+  shape: person
+  style: {
+    fill: "#FFF3E0"
+    stroke: "#E65100"
+    stroke-width: 2
+    bold: true
+  }
+}
+
+# ── Studio (the box) ─────────────────────────────────────────────────────
+
+studio: "SI/S Studio  (BB substrate + developer UI)" {
+  style: {
+    fill: "#F3E5F5"
+    stroke: "#6A1B9A"
+    stroke-width: 2
+    bold: true
+    font-size: 18
+  }
+
+  parsers: "② Parsers\nTree-sitter · ANTLR\nPDF · Markdown" {
+    shape: hexagon
+    style: {
+      fill: "#CE93D8"
+      stroke: "#4A148C"
+    }
+  }
+
+  dsl: ".sigdsl stream\n(typed JSONL,\nschema-validated)" {
+    shape: document
+    style: {
+      fill: "#FFFDE7"
+      stroke: "#F57F17"
+      stroke-dash: 3
+    }
+  }
+
+  bb: "BB substrate\n(workspace where\nproposals + findings\ninterleave)" {
+    shape: cloud
+    style: {
+      fill: "#FFFFFF"
+      stroke: "#6A1B9A"
+      stroke-dash: 4
+    }
+  }
+
+  graphloader: "③ GraphLoader\n(sole writer\nto SI/G)" {
+    shape: diamond
+    style: {
+      fill: "#BA68C8"
+      stroke: "#4A148C"
+      bold: true
+    }
+  }
+
+  graph: "④ SI/G\nDurable knowledge graph\n(PolyGraph default,\nNeo4j optional)" {
+    shape: cylinder
+    style: {
+      fill: "#9C27B0"
+      stroke: "#4A148C"
+      font-color: "#FFFFFF"
+      bold: true
+    }
+  }
+
+  analysts: "Analysts\nInventory · Dependencies\nIntent-vs-Reality\nConstraint Coverage\nRisk · Patterns" {
+    shape: hexagon
+    style: {
+      fill: "#CE93D8"
+      stroke: "#4A148C"
+    }
+  }
+
+  graphreader: "⑤ GraphReader\n(sole producer\nof deliverables)" {
+    shape: diamond
+    style: {
+      fill: "#BA68C8"
+      stroke: "#4A148C"
+      bold: true
+    }
+  }
+
+  chainblocks: "chainblocks ledger\naudits every transition\nwith user attribution" {
+    shape: page
+    style: {
+      fill: "#212121"
+      stroke: "#000000"
+      font-color: "#FFFFFF"
+      bold: true
+    }
+  }
+
+  dev_ui: "Developer UI\noperators inspect BB,\noverride findings,\nmanage promotions" {
+    shape: rectangle
+    style: {
+      fill: "#FFFFFF"
+      stroke: "#6A1B9A"
+    }
+  }
+
+  # Internal flow
+  parsers -> dsl: "emit"
+  dsl -> bb: "land on"
+  bb -> graphloader: "validated proposals"
+  graphloader -> graph: "promotes" {
+    style.stroke-width: 3
+    style.stroke: "#4A148C"
+  }
+  graph -> analysts: "read"
+  analysts -> bb: "post findings"
+  graph -> graphreader: "read"
+
+  # Audit lines (dotted)
+  parsers -> chainblocks: "audit" { style.stroke-dash: 2; style.stroke: "#616161" }
+  graphloader -> chainblocks: "audit" { style.stroke-dash: 2; style.stroke: "#616161" }
+  analysts -> chainblocks: "audit" { style.stroke-dash: 2; style.stroke: "#616161" }
+  graphreader -> chainblocks: "audit" { style.stroke-dash: 2; style.stroke: "#616161" }
+
+  # Dev UI links
+  dev_ui -> bb: "" { style.stroke-dash: 5; style.stroke: "#9E9E9E" }
+}
+
+# ── Window ───────────────────────────────────────────────────────────────
+
+window: "⑦ SI/W Window\n(consumer UI,\nrole-scoped)" {
+  shape: rectangle
+  style: {
+    fill: "#E1F5FE"
+    stroke: "#0277BD"
+    stroke-width: 2
+    bold: true
+  }
+}
+
+# ── External flow ────────────────────────────────────────────────────────
+
+input_bucket -> studio.parsers: "①→②"
+studio.graphreader -> output_bucket: "writes deliverables" {
+  style.stroke-width: 3
+  style.stroke: "#388E3C"
+}
+output_bucket -> window: "reads from bucket"
+
+# Identity authenticates Studio + Window (dashed)
+identity -> studio: "auth" { style.stroke-dash: 4; style.stroke: "#E65100" }
+identity -> window: "auth" { style.stroke-dash: 4; style.stroke: "#E65100" }
