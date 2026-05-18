@@ -21,7 +21,7 @@
  *   - Cross-row wrap: graphloader -> sig_graph (the only vertical jog)
  *
  * Icons:
- *   Bill's bespoke `_Reverse` family from inputs/icons/. Each node uses
+ *   Bill's bespoke `_Reverse` family from inputs/icons/_half/. Each node uses
  *   image= for the icon plus imagescale=true and labelloc=b so the label
  *   sits below the icon. Boxes are tinted ~10% alpha of stroke color for
  *   category at a glance.
@@ -72,7 +72,7 @@ digraph SI_Pipeline {
 
   input_bucket [
     label="Input Bucket\nS3 (customer data)",
-    image="../../../../inputs/icons/Storage_Bucket_Reverse.svg",
+    image="../../../../inputs/icons/_half/Storage_Bucket_Reverse.svg",
     fillcolor="#E3F2FD",
     color="#1976D2",
     penwidth=2,
@@ -82,7 +82,7 @@ digraph SI_Pipeline {
 
   parsers [
     label="Parsers\nTree-sitter / ANTLR / PDF",
-    image="../../../../inputs/icons/agent.png",
+    image="../../../../inputs/icons/_half/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
@@ -92,7 +92,7 @@ digraph SI_Pipeline {
 
   dsl [
     label=".sigdsl stream\ntyped JSONL",
-    image="../../../../inputs/icons/Messaging_Distributer_Reverse.svg",
+    image="../../../../inputs/icons/_half/Messaging_Distributer_Reverse.svg",
     fillcolor="#FFFDE7",
     color="#F57F17",
     style="filled,rounded,dashed",
@@ -103,7 +103,7 @@ digraph SI_Pipeline {
 
   graphloader [
     label="GraphLoader\nsole writer to SI/G",
-    image="../../../../inputs/icons/agent.png",
+    image="../../../../inputs/icons/_half/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
@@ -115,7 +115,7 @@ digraph SI_Pipeline {
 
   sig_graph [
     label="SI/G\nKnowledge Graph",
-    image="../../../../inputs/icons/Database_Graph_Reverse.svg",
+    image="../../../../inputs/icons/_half/Database_Graph_Reverse.svg",
     fillcolor="#EDE7F6",
     color="#4A148C",
     penwidth=3,
@@ -125,7 +125,7 @@ digraph SI_Pipeline {
 
   graphreader [
     label="GraphReader\nsole producer of\ndeliverables",
-    image="../../../../inputs/icons/agent.png",
+    image="../../../../inputs/icons/_half/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
@@ -135,7 +135,7 @@ digraph SI_Pipeline {
 
   output_bucket [
     label="Output Bucket\nS3 git-tree",
-    image="../../../../inputs/icons/Storage_Bucket_Reverse.svg",
+    image="../../../../inputs/icons/_half/Storage_Bucket_Reverse.svg",
     fillcolor="#E8F5E9",
     color="#388E3C",
     penwidth=2,
@@ -145,7 +145,7 @@ digraph SI_Pipeline {
 
   window [
     label="SI/W Window\nconsumer UI",
-    image="../../../../inputs/icons/General_Dashboard_Reverse.svg",
+    image="../../../../inputs/icons/_half/General_Dashboard_Reverse.svg",
     fillcolor="#E1F5FE",
     color="#0277BD",
     penwidth=2,
