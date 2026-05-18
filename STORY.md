@@ -50,31 +50,36 @@ If you have a bundle of project artifacts and a question — "what's in this?", 
 
 ## The components
 
-Solution Intelligence has five named components. They are referred to by short IDs throughout the SI documentation.
+Solution Intelligence has four named components. They are referred to by short IDs throughout the SI documentation.
+
+Note on naming: "Blackboard" (BB) is the **substrate inside Studio** — the working surface where parsers, GraphLoader, analysts, and GraphReader interact. It is not a separate top-level component. We refer to it as "Studio's BB substrate" or just "the BB substrate" when we need to distinguish it from Studio's developer UI.
 
 ### SI/S — Studio
 
-The **developer workbench.** This is the operator's surface — what an engineer, analyst, or build-engineer uses to *make* the intelligence. Studio is responsible for:
-- Receiving inputs (drag-and-drop files, directory ingestion, API uploads)
+The **developer workbench, which is the Blackboard.** Studio = the BB substrate + a developer UI on top of it. Operationally there is no "Studio without BB" or "BB without Studio" — they are the same thing, viewed from two angles. Studio is what an engineer, analyst, or build-engineer uses to *make* the intelligence.
+
+Studio is responsible for:
+- Receiving inputs (S3 bucket ingestion, drag-and-drop files, directory ingestion, API uploads)
 - Routing each input to the right parser based on its declared epistemic class (see "The doctrinal anchor" below)
-- Running the Blackboard pipeline against ingested inputs
-- Providing a developer UI to inspect Blackboard state, manually trigger analysts, re-ingest, and intervene
-- Producing analytical artifacts (reports, dashboards, exports) into the Graph
+- Running the parser → DSL → GraphLoader pipeline; promotions land in SI/G
+- Running the analyst chain (analysts read SI/G + post derived findings back to the BB substrate, which GraphLoader then promotes)
+- Producing deliverable artifacts via GraphReader (reports, exports, generated code) into the output bucket
+- Providing a developer UI to inspect BB substrate state, manually trigger analysts, re-ingest, override findings, and intervene
+- Writing every significant event to a chainblocks ledger with user attribution
 
-Studio is the *box* you instantiate per project. Each Solution Intelligence engagement gets its own Studio container set.
+**Studio internals (the BB substrate doing the work):**
 
-### SI/BB — Blackboard
+This is the classic blackboard architecture pattern (Hayes-Roth 1985, refined through decades of expert-systems and multi-agent work): a shared workspace where specialist knowledge sources post hypotheses, where a controller decides which contributions advance the analysis, and where the eventual answer emerges from coordinated specialist work.
 
-The **cognitive substrate inside Studio.** This is the classic blackboard architecture pattern (Hayes-Roth 1985, refined through decades of expert-systems and multi-agent work): a shared workspace where specialist knowledge sources post hypotheses, where a controller decides which contributions advance the analysis, and where the eventual answer emerges from coordinated specialist work.
-
-SI/BB is where:
-- Parsers post structural facts ("this file declares 3 classes")
+The BB substrate inside Studio is where:
+- Parsers post structural proposals as a typed `.sigdsl` stream ("this file declares 3 classes")
+- GraphLoader pulls validated proposals and promotes them to SI/G
 - Analysts post derived findings ("class Foo has cyclic dependencies on Bar")
 - Cross-cutting reasoners post integration claims ("this code section is the implementation of RFP clause §3.4.1")
 - Conflicts get noticed and surfaced ("design doc says X; code does Y")
 - Promotion rules decide what becomes durable in SI/G
 
-The Blackboard is the working substrate. It is where the *interesting work happens*. SI/G is the durable record of what survives.
+Studio is the *box* you instantiate per project. Each Solution Intelligence engagement gets its own Studio container set. **The BB substrate may eventually be extracted as a standalone library** (see doctrine §8 below) — in that case, what graduates is the substrate alone; Studio's developer UI stays with Studio.
 
 ### SI/G — Graph
 
@@ -119,15 +124,23 @@ A single Solution Intelligence engagement instantiates its **own container set**
 ```
 SI project (e.g. "dla-stores")  — its own Docker compose stack
 ├── SI/I — Identity service (bangauth or OIDC adapter)
-├── SI/S — Studio container
-│   ├── SI/BB — Blackboard substrate (running inside Studio)
+├── SI/S — Studio (BB substrate + developer UI)
+│   ├── Parsers (Tree-sitter, ANTLR, PDF, markdown, ...)
+│   ├── BB substrate (where parsers post .sigdsl, where analysts work)
+│   ├── GraphLoader (the only writer to SI/G)
+│   ├── Analysts (Inventory, Dependency Atlas, ...)
+│   ├── GraphReader (produces deliverables into the output bucket)
 │   ├── Developer UI (web; operator-facing; concurrent-operator support)
 │   └── chainblocks ledger (audit trail of significant events, with user attribution)
 ├── SI/G — Graph (backed by PolyGraph or Neo4j; durable)
 └── SI/W — Window (web; consumer-facing; role-scoped views)
 ```
 
-One SI/S, one SI/G, one SI/W, one SI/I per project. Multiple operators connect concurrently to the same SI/S; their actions are attributed individually in the chainblocks ledger and in BB state. Each is a Docker service; the whole engagement is `docker compose up`.
+Plus two external buckets that bracket the pipeline:
+- **Input bucket** (S3) — customer's raw data (codebase, design docs, RFPs, evidence, ...)
+- **Output bucket** (S3) — deliverable artifacts in git-folder structure (reports, graph export, derived code, DSL, audit ledger archive). SI/W reads from this bucket.
+
+One SI/S, one SI/G, one SI/W, one SI/I per project. Multiple operators connect concurrently to the same SI/S; their actions are attributed individually in the chainblocks ledger and in BB substrate state. Each is a Docker service; the whole engagement is `docker compose up`.
 
 ---
 
@@ -319,7 +332,7 @@ A few notes for anyone writing Solution Intelligence docs going forward:
 
 - **Honor the epistemic distinctions.** Never speak of "documents" as a flat bag. Always say which class.
 - **First-person plural ("we") when stating doctrine; second-person ("you") when explaining usage.** Never "the user" in product-voice contexts — prefer the role (Operator, Analyst, Reviewer, Customer) so the doc is precise about who is doing what.
-- **Component IDs (SI/S, SI/BB, SI/G, SI/W, SI/I) are short stable references.** Use them in cross-doc citations.
+- **Component IDs (SI/S, SI/G, SI/W, SI/I) are short stable references.** Use them in cross-doc citations. "BB" or "the BB substrate" refers to the substrate inside Studio; it is not a top-level component.
 - **The deliverable suite list is the menu, not the menu's items.** A given project produces a calibrated subset, not the whole list.
 - **chainblocks is "the audit trail," not "the blockchain."** Tamper-evident, not tamper-proof. Cite the audit when it matters; do not promise more than the substrate delivers.
 - **Audit attribution is always to a person, never to "the system."** Every action in SI is attributable to a named user; documentation should read accordingly ("the Operator triggers ingestion," not "the system ingests").
@@ -328,7 +341,7 @@ A few notes for anyone writing Solution Intelligence docs going forward:
 
 ## Provenance
 
-This story is the left-bookend of Solution Intelligence. It was written 2026-05-18 by Bhai (the personal twin) with Bill (the architect), the morning after the pattern was named for the first time. The naming came from Bill: Solution Intelligence as the overarching project, Studio as the workbench, Blackboard as the substrate inside, Graph as the durable artifact, Window as the consumer-facing UI. SI/I (Identity) was added the same morning when Bill stipulated that SI must be multi-user from day one; the 5-role model and bangauth-plus-OIDC default fell out of that conversation. The story is the first articulation of what those names mean and how they fit together.
+This story is the left-bookend of Solution Intelligence. It was written 2026-05-18 by Bhai (the personal twin) with Bill (the architect), the morning after the pattern was named for the first time. The naming came from Bill: Solution Intelligence as the overarching project, Studio as the workbench, Blackboard as the substrate inside, Graph as the durable artifact, Window as the consumer-facing UI. SI/I (Identity) was added the same morning when Bill stipulated that SI must be multi-user from day one; the 5-role model and bangauth-plus-OIDC default fell out of that conversation. Late morning, Bill rendered the runtime pipeline diagram and clarified that **Studio = the Blackboard** (substrate + developer UI), collapsing SI/BB from a top-level component into Studio's internal substrate. The component count went from five to four. The same revision introduced the DSL as a first-class intermediate artifact and S3 buckets at both ends of the pipeline.
 
 Subsequent documents (`REQUIREMENTS.md`, `MODEL.md`, `docs/USE-CASES.md`, `docs/FEATURES.md`) will refine this story into specifications. Code is built against the specifications. If the code drifts from this story, the story is updated (with a changelog entry) or the code is corrected — never both silently.
 

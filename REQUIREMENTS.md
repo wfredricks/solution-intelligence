@@ -9,7 +9,7 @@ Every requirement has a stable ID of the form `REQ-SI-NNN` (functional) or `REQ-
 
 Each requirement is covered by at least one test in `test/requirements/*.req.test.ts` with the requirement ID tagged in the test name or comment.
 
-Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus a **cross-cutting** section for things that span components.
+Requirements are organized **by component** (SI/S, SI/G, SI/W, SI/I) plus **cross-cutting** sections for things that span components. The BB (Blackboard) substrate lives inside SI/S; its requirements appear under "Studio BB substrate" rather than as a separate component.
 
 ---
 
@@ -33,7 +33,7 @@ Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus
 
 ### Input ingestion (SI/S responsibility)
 
-**REQ-SI-010** — Studio accepts inputs via three channels: (a) directory drop (`si ingest <project> <path>`), (b) HTTP upload API, (c) drag-and-drop through the developer UI.
+**REQ-SI-010** — Studio accepts inputs via four channels: (a) S3 bucket ingestion (`si ingest <project> --s3 <bucket-uri>`), (b) directory drop (`si ingest <project> <path>`), (c) HTTP upload API, (d) drag-and-drop through the developer UI.
 
 **REQ-SI-011** — Every ingested input is tagged with one of the six declared epistemic classes: `ground-truth`, `aspirational`, `constraint`, `evidence`, `tribal`, `reference`. The class is supplied at ingestion time, either explicitly (CLI flag, UI selector, API parameter) or via template-declared default rules (e.g., `*.cs` defaults to `ground-truth`).
 
@@ -47,6 +47,10 @@ Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus
 
 **REQ-SI-016** — The full set of inputs ingested into a project is queryable via `si inputs <project>` (CLI), HTTP API, and the Studio UI.
 
+**REQ-SI-017** — S3 bucket ingestion supports authentication via standard AWS credentials (env, profile, role) and is scoped to a configured bucket + key prefix per project. SI never reads outside the configured scope.
+
+**REQ-SI-018** — S3 ingestion can be either one-shot (`si ingest --s3 <uri>`) or event-driven (S3 event notifications via a webhook endpoint exposed by SI/S). Event-driven ingestion is opt-in per project.
+
 ### Parser registry (cross-cutting)
 
 **REQ-SI-020** — A parser is a pluggable component declaring: which file extensions/MIME types it handles, which epistemic classes it accepts, what node types it emits, what edge types it emits.
@@ -55,23 +59,31 @@ Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus
 
 **REQ-SI-022** — v0.1 ships with the following parsers: `csharp` (C# source via Roslyn or equivalent), `markdown` (prose docs, with REQ-/UC-/FT- extraction heuristics), `pdf` (text extraction for RFP/PWS handling), `json/yaml/toml` (config files), `plain-text` (fallback for `unknown` files). Other parsers (COBOL, Java, SQL, etc.) ship in later versions.
 
-**REQ-SI-023** — A parser's output is structured: each call returns a list of `NodeProposals` (with proposed labels and properties) and `EdgeProposals` (between proposed nodes or to existing graph nodes by id). Parsers do NOT write directly to the Graph; the SI/BB → SI/G promotion is owned by the framework.
+**REQ-SI-023** — A parser's output is a typed **DSL stream** (`.sigdsl`, JSONL format) conforming to the DSL schema (see REQ-SI-110..115). Each DSL record is either a `NodeProposal` or an `EdgeProposal`. Parsers do NOT write directly to SI/G; only GraphLoader writes to SI/G (REQ-SI-025).
 
 **REQ-SI-024** — Every parser invocation produces an audit event with: parser name, parser version, input id, input hash, output summary (node/edge counts), duration, success/failure status. Audit events go to the project's chainblocks ledger.
 
-### Blackboard (SI/BB) — substrate inside Studio
+**REQ-SI-025** — GraphLoader is the **sole writer** to SI/G. Parsers, analysts, and operator actions all funnel through GraphLoader for any state change to SI/G. This is a deliberate bottleneck for auditability.
 
-**REQ-SI-030** — The Blackboard is the working substrate where parsers post NodeProposals and EdgeProposals, where analysts post derived findings, and where promotion decisions occur.
+**REQ-SI-026** — GraphLoader validates every incoming DSL record against the DSL schema before promoting. Records that fail validation are surfaced as findings on the BB substrate and recorded in the audit ledger; they do not enter SI/G.
 
-**REQ-SI-031** — BB state is queryable while ingestion and analysis are in progress: an operator (via the Studio dev UI) can see what's pending, what's been promoted, what conflicts have surfaced, and what's blocked.
+**REQ-SI-027** — GraphReader is the **sole producer** of deliverables. Reports, graph exports, generated code (e.g., ServiceNow migration scripts) all go through GraphReader. This is the symmetric bottleneck on the read side.
 
-**REQ-SI-032** — The BB enforces a promotion policy per node type: a NodeProposal is promoted to SI/G when (a) promotion criteria are met (configurable per template), or (b) an operator explicitly accepts it via the dev UI. Default policy: parser-produced nodes from `ground-truth` inputs are auto-promoted; nodes from `aspirational`, `constraint`, `evidence`, `tribal`, `reference` inputs require explicit promotion OR analyst-derived corroboration.
+### Studio BB substrate (inside SI/S)
 
-**REQ-SI-033** — Conflicts (e.g. an `aspirational` claim contradicted by a `ground-truth` observation) are surfaced as `Conflict` nodes on the BB. Conflicts must be resolved before either side promotes. Resolution is an operator action (with audit attribution) producing a `RESOLVED_BY` edge.
+The BB (Blackboard) is the substrate inside Studio where parsers post DSL records, analysts post findings, and promotion decisions occur. It is not a separate top-level component; these requirements describe Studio's internal working surface.
 
-**REQ-SI-034** — BB state is durable: a Studio restart resumes from BB state on disk; in-flight ingestions or analyst runs that were interrupted are recoverable or restartable.
+**REQ-SI-030** — The BB substrate is where DSL records from parsers land, where analysts post derived findings, where conflicts surface, and where promotion decisions occur. GraphLoader pulls validated proposals from the BB and writes them to SI/G.
 
-**REQ-SI-035** — Multiple operators can interact with the BB concurrently. Operator actions are serialized internally (no race conditions on promotion decisions, conflict resolutions, or status changes) and each action is attributed in the audit ledger.
+**REQ-SI-031** — BB substrate state is queryable while ingestion and analysis are in progress: an operator (via the Studio dev UI) can see what's pending, what's been promoted, what conflicts have surfaced, and what's blocked.
+
+**REQ-SI-032** — The BB substrate enforces a promotion policy per node type: a NodeProposal is promoted to SI/G when (a) promotion criteria are met (configurable per template), or (b) an operator explicitly accepts it via the dev UI. Default policy: parser-produced nodes from `ground-truth` inputs are auto-promoted; nodes from `aspirational`, `constraint`, `evidence`, `tribal`, `reference` inputs require explicit promotion OR analyst-derived corroboration.
+
+**REQ-SI-033** — Conflicts (e.g. an `aspirational` claim contradicted by a `ground-truth` observation) are surfaced as `Conflict` nodes on the BB substrate. Conflicts must be resolved before either side promotes. Resolution is an operator action (with audit attribution) producing a `RESOLVED_BY` edge.
+
+**REQ-SI-034** — BB substrate state is durable: a Studio restart resumes from substrate state on disk; in-flight ingestions or analyst runs that were interrupted are recoverable or restartable.
+
+**REQ-SI-035** — Multiple operators can interact with the BB substrate concurrently. Operator actions are serialized internally (no race conditions on promotion decisions, conflict resolutions, or status changes) and each action is attributed in the audit ledger.
 
 ### Analyst suite (SI/S responsibility; v0.1 set)
 
@@ -157,15 +169,46 @@ Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus
 
 **REQ-SI-093** — `chainblocks-verify projects/<project>/audit.ledger` produces a green check on an intact ledger. Tampering with any block produces a red X with the exact failing seq.
 
-### Reports (SI/S → SI/W deliverable)
+### Reports + output bucket (GraphReader → deliverables)
 
-**REQ-SI-100** — `si report <project>` generates the standard deliverable suite (the artifacts the project is configured to produce). Output formats: HTML (the default; viewable in SI/W and exportable), Markdown, PDF (via pandoc or equivalent).
+**REQ-SI-100** — `si report <project>` invokes GraphReader to generate the standard deliverable suite (the artifacts the project is configured to produce). Output formats: HTML (the default; viewable in SI/W and exportable), Markdown, PDF (via pandoc or equivalent).
 
-**REQ-SI-101** — Each report cites its source nodes/edges in SI/G; a reader of the HTML report can click a finding and see the underlying graph elements.
+**REQ-SI-101** — Each report cites its source nodes/edges in SI/G; a reader of the HTML report can click a finding and see the underlying graph elements. Citations include chainblocks ledger seq numbers for full provenance.
 
 **REQ-SI-102** — Reports are reproducible: re-generating against the same SI/G state produces byte-identical output (modulo timestamps which are explicitly identified).
 
 **REQ-SI-103** — Templates declare which reports are appropriate. A `prose-doc` template produces a different set (essentially: Inventory + a coverage-style report) than a `csharp-to-servicenow` template (full suite).
+
+**REQ-SI-104** — GraphReader writes deliverables to a configured output destination: either local directory or an S3 bucket. The output structure is a **git-initialized folder tree** the customer can clone, push to a Git remote, or hand off as-is.
+
+**REQ-SI-105** — The standard output tree layout is:
+```
+<output>/
+├── reports/      — HTML/MD/PDF deliverables
+├── graph/        — SI/G portable export (JSONL nodes + JSONL edges + schema)
+├── dsl/          — the .sigdsl streams produced by parsers (replayable input)
+├── derived/      — generated code, migration scripts, transforms
+├── audit/        — chainblocks ledger archive + verification artifacts
+└── README.md     — deliverable index for the consumer
+```
+
+**REQ-SI-106** — The output tree is git-initialized at write time (or refreshed if it already exists). Each `si report` invocation produces a new commit on the output tree's main branch with a descriptive message and the chainblocks ledger seq range it covered.
+
+### DSL (Solution Intelligence Graph Language)
+
+The `.sigdsl` format is the **typed intermediate** between parsers and GraphLoader. It is a first-class artifact: persisted in the output bucket, replayable, version-stable, parser-language-agnostic.
+
+**REQ-SI-110** — The DSL is line-oriented JSONL. Each line is a single JSON object representing one `NodeProposal` or one `EdgeProposal`.
+
+**REQ-SI-111** — Every DSL record carries: `op` ("node" | "edge"), `label` or `type` (the proposed node label or edge type), `id` (stable string identifier scoped to the project), `props` (object), `epistemicClass` (one of the six declared classes), and `sourceRef` (path + optional line range).
+
+**REQ-SI-112** — The DSL schema is declared as a JSON Schema document at `docs/DSL-SCHEMA.md` + a machine-readable `.schema.json` companion. Parsers and GraphLoader both validate against it.
+
+**REQ-SI-113** — The DSL schema is versioned. Each `.sigdsl` file declares the schema version it conforms to in a header comment line (`// sigdsl/v1`). GraphLoader rejects unsupported versions with a clear error.
+
+**REQ-SI-114** — The DSL is preserved in the output bucket at `dsl/<input-id>.sigdsl` for each ingested input. Re-running the project from this DSL alone produces an identical SI/G (deterministic replay).
+
+**REQ-SI-115** — GraphLoader records a chainblocks audit event for every DSL record it processes (promoted or rejected). The audit event references the DSL file + line number for traceability.
 
 ---
 
@@ -256,17 +299,18 @@ Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus
 | Component | Functional REQs | Count |
 |-----------|----------------|------:|
 | Project lifecycle (cross-cutting) | REQ-SI-001 through 007 | 7 |
-| Input ingestion (SI/S) | REQ-SI-010 through 016 | 7 |
-| Parser registry | REQ-SI-020 through 024 | 5 |
-| Blackboard (SI/BB) | REQ-SI-030 through 035 | 6 |
+| Input ingestion (SI/S, incl. S3) | REQ-SI-010 through 018 | 9 |
+| Parser registry + GraphLoader/Reader | REQ-SI-020 through 027 | 8 |
+| Studio BB substrate | REQ-SI-030 through 035 | 6 |
 | Analyst suite | REQ-SI-040 through 045 | 6 |
 | Graph (SI/G) | REQ-SI-050 through 056 | 7 |
 | Window (SI/W) | REQ-SI-060 through 065 | 6 |
 | Identity (SI/I) | REQ-SI-070 through 077 | 8 |
 | CLI | REQ-SI-080 through 084 | 5 |
 | Audit (chainblocks) | REQ-SI-090 through 093 | 4 |
-| Reports | REQ-SI-100 through 103 | 4 |
-| **Functional subtotal** | | **65** |
+| Reports + output bucket | REQ-SI-100 through 106 | 7 |
+| DSL (Solution Intelligence Graph Language) | REQ-SI-110 through 115 | 6 |
+| **Functional subtotal** | | **79** |
 
 | Category | Non-functional REQs | Count |
 |----------|---------------------|------:|
@@ -279,7 +323,7 @@ Requirements are organized **by component** (SI/S, SI/BB, SI/G, SI/W, SI/I) plus
 | Multi-user semantics | REQ-SI-NF-060 through 063 | 4 |
 | **Non-functional subtotal** | | **29** |
 
-**Total at v0.1:** 65 functional + 29 non-functional = **94 requirements.**
+**Total at v0.1:** 79 functional + 29 non-functional = **108 requirements.**
 
 *Counts validated against the actual REQ-SI-* and REQ-SI-NF-* definitions above by the SI SIG ingestion at `sig/queries/` (to be built alongside MODEL.md and USE-CASES.md).*
 
