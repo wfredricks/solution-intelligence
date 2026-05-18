@@ -53,7 +53,7 @@ digraph SI_Pipeline {
     fillcolor="#FFFFFF",
     color="#333333",
     penwidth=1.5,
-    margin="0.15,0.10",
+    margin="0.20,0.25",  /* x,y padding — y bumped so label clears box bottom */
     imagescale=true,
     labelloc=b
   ];
@@ -81,7 +81,7 @@ digraph SI_Pipeline {
 
   parsers [
     label="Parsers\nTree-sitter / ANTLR / PDF",
-    image="../../../../inputs/icons/COMET_Icons_Function_Reverse.svg",
+    image="../../../../inputs/icons/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
@@ -102,7 +102,7 @@ digraph SI_Pipeline {
 
   graphloader [
     label="GraphLoader\nsole writer to SI/G",
-    image="../../../../inputs/icons/COMET_Icons_Function_Reverse.svg",
+    image="../../../../inputs/icons/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
@@ -124,7 +124,7 @@ digraph SI_Pipeline {
 
   graphreader [
     label="GraphReader\nsole producer of\ndeliverables",
-    image="../../../../inputs/icons/COMET_Icons_Function_Reverse.svg",
+    image="../../../../inputs/icons/agent.png",
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
