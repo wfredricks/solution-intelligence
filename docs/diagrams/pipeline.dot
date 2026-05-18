@@ -49,13 +49,14 @@ digraph SI_Pipeline {
     shape=box,
     style="filled,rounded",
     fontname="Helvetica",
-    fontsize=11,
+    fontsize=10,
     fillcolor="#FFFFFF",
     color="#333333",
     penwidth=1.5,
-    margin="0.20,0.25",  /* x,y padding — y bumped so label clears box bottom */
+    margin="0.25,0.25",  /* x,y padding around label */
     imagescale=true,
-    labelloc=b
+    imagepos="tc",       /* image top-center; label sits below with breathing room */
+    labelloc="b"
   ];
 
   /* Default edge style: orthogonal, dark grey, bold */
@@ -75,8 +76,8 @@ digraph SI_Pipeline {
     fillcolor="#E3F2FD",
     color="#1976D2",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   parsers [
@@ -85,8 +86,8 @@ digraph SI_Pipeline {
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   dsl [
@@ -96,8 +97,8 @@ digraph SI_Pipeline {
     color="#F57F17",
     style="filled,rounded,dashed",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   graphloader [
@@ -106,8 +107,8 @@ digraph SI_Pipeline {
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   /* ── Bottom row: production side ─────────────────────────────── */
@@ -118,8 +119,8 @@ digraph SI_Pipeline {
     fillcolor="#EDE7F6",
     color="#4A148C",
     penwidth=3,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   graphreader [
@@ -128,8 +129,8 @@ digraph SI_Pipeline {
     fillcolor="#F3E5F5",
     color="#6A1B9A",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   output_bucket [
@@ -138,8 +139,8 @@ digraph SI_Pipeline {
     fillcolor="#E8F5E9",
     color="#388E3C",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   window [
@@ -148,8 +149,8 @@ digraph SI_Pipeline {
     fillcolor="#E1F5FE",
     color="#0277BD",
     penwidth=2,
-    width=2.0,
-    height=1.4
+    width=2.2,
+    height=1.8
   ];
 
   /* ── Row groupings: force two rows ──────────────────────────── */
