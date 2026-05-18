@@ -1,0 +1,183 @@
+/* Solution Intelligence — Runtime Pipeline (Graphviz dot)
+ *
+ * Renders to docs/diagrams/pipeline.svg + pipeline.png
+ * Build:
+ *   dot -Tsvg pipeline.dot -o pipeline.svg
+ *   dot -Tpng pipeline.dot -o pipeline.png
+ *
+ * Why Graphviz/dot for this diagram (after trying D2):
+ *   D2's ELK and dagre backends don't reliably honor nested `direction:`
+ *   overrides, so a two-row left-to-right layout proved hard to achieve.
+ *   Graphviz's `splines=ortho` produces clean 90° edge routing — the
+ *   "wiring / P&ID / subway map" aesthetic — and `rankdir=LR` plus
+ *   explicit `{rank=same; ...}` groupings give us precise control over
+ *   which nodes sit on which row.
+ *
+ * Layout:
+ *   - rankdir=LR: pipeline flows left to right
+ *   - splines=ortho: orthogonal (90°-corner) edge routing
+ *   - Top row: input_bucket -> parsers -> dsl -> graphloader
+ *   - Bottom row: sig_graph -> graphreader -> output_bucket -> window
+ *   - Cross-row wrap: graphloader -> sig_graph (the only vertical jog)
+ *
+ * Icons:
+ *   Bill's bespoke `_Reverse` family from inputs/icons/. Each node uses
+ *   image= for the icon plus imagescale=true and labelloc=b so the label
+ *   sits below the icon. Boxes are tinted ~10% alpha of stroke color for
+ *   category at a glance.
+ *
+ * Identity (SI/I) and chainblocks audit are universal concerns described
+ * in PIPELINE.md prose, not shown as connected nodes.
+ */
+
+digraph SI_Pipeline {
+  /* Global graph attributes */
+  /* rankdir=TB: nodes flow top-to-bottom by default, BUT we use
+   * {rank=same; ...} blocks to force horizontal rows. With rankdir=TB,
+   * rank=same means 'same horizontal row' — which is what we want.
+   * (rankdir=LR would make rank=same mean 'same vertical column'.) */
+  rankdir=TB;
+  splines=ortho;
+  nodesep=0.5;
+  ranksep=0.8;
+  bgcolor="transparent";
+  pad=0.2;
+  fontname="Helvetica";
+
+  /* Default node style: rectangle with icon-above-label */
+  node [
+    shape=box,
+    style="filled,rounded",
+    fontname="Helvetica",
+    fontsize=11,
+    fillcolor="#FFFFFF",
+    color="#333333",
+    penwidth=1.5,
+    margin="0.15,0.10",
+    imagescale=true,
+    labelloc=b
+  ];
+
+  /* Default edge style: orthogonal, dark grey, bold */
+  edge [
+    color="#333333",
+    penwidth=1.5,
+    fontname="Helvetica",
+    fontsize=9,
+    arrowsize=0.7
+  ];
+
+  /* ── Top row: ingest side ─────────────────────────────────────── */
+
+  input_bucket [
+    label="Input Bucket\nS3 (customer data)",
+    image="../../../../inputs/icons/Storage_Bucket_Reverse.svg",
+    fillcolor="#E3F2FD",
+    color="#1976D2",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  parsers [
+    label="Parsers\nTree-sitter / ANTLR / PDF",
+    image="../../../../inputs/icons/COMET_Icons_Function_Reverse.svg",
+    fillcolor="#F3E5F5",
+    color="#6A1B9A",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  dsl [
+    label=".sigdsl stream\ntyped JSONL",
+    image="../../../../inputs/icons/Messaging_Distributer_Reverse.svg",
+    fillcolor="#FFFDE7",
+    color="#F57F17",
+    style="filled,rounded,dashed",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  graphloader [
+    label="GraphLoader\nsole writer to SI/G",
+    image="../../../../inputs/icons/COMET_Icons_Function_Reverse.svg",
+    fillcolor="#F3E5F5",
+    color="#6A1B9A",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  /* ── Bottom row: production side ─────────────────────────────── */
+
+  sig_graph [
+    label="SI/G\nKnowledge Graph",
+    image="../../../../inputs/icons/Database_Graph_Reverse.svg",
+    fillcolor="#EDE7F6",
+    color="#4A148C",
+    penwidth=3,
+    width=2.0,
+    height=1.4
+  ];
+
+  graphreader [
+    label="GraphReader\nsole producer of\ndeliverables",
+    image="../../../../inputs/icons/COMET_Icons_Function_Reverse.svg",
+    fillcolor="#F3E5F5",
+    color="#6A1B9A",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  output_bucket [
+    label="Output Bucket\nS3 git-tree",
+    image="../../../../inputs/icons/Storage_Bucket_Reverse.svg",
+    fillcolor="#E8F5E9",
+    color="#388E3C",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  window [
+    label="SI/W Window\nconsumer UI",
+    image="../../../../inputs/icons/General_Dashboard_Reverse.svg",
+    fillcolor="#E1F5FE",
+    color="#0277BD",
+    penwidth=2,
+    width=2.0,
+    height=1.4
+  ];
+
+  /* ── Row groupings: force two rows ──────────────────────────── */
+
+  { rank=same; input_bucket; parsers; dsl; graphloader }
+  { rank=same; sig_graph; graphreader; output_bucket; window }
+
+  /* ── Column alignment (invisible edges) ──────────────────────── */
+  /* Force the bottom row to sit directly under the top row instead of
+   * shifting right (the "staircase" effect). Each top-row node gets an
+   * invisible edge to the bottom-row node in the same column.
+   * input_bucket aligns with sig_graph, parsers with graphreader, etc. */
+
+  input_bucket  -> sig_graph     [style=invis];
+  parsers       -> graphreader   [style=invis];
+  dsl           -> output_bucket [style=invis];
+  graphloader   -> window        [style=invis];
+
+  /* ── Edges (the pipeline) ────────────────────────────────────── */
+
+  input_bucket -> parsers;
+  parsers -> dsl [label="emit"];
+  dsl -> graphloader [label="land + validate"];
+
+  /* Cross-row wrap: GraphLoader (top) -> SI/G (bottom). 90° corner. */
+  graphloader -> sig_graph [label="promotes", penwidth=3, color="#4A148C"];
+
+  sig_graph -> graphreader [label="read"];
+  graphreader -> output_bucket [label="writes", penwidth=3, color="#388E3C"];
+  output_bucket -> window [label="reads"];
+}
