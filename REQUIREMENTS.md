@@ -129,6 +129,12 @@ The BB (Blackboard) is the substrate inside Studio where parsers post DSL record
 
 **REQ-SI-065** — Window includes an exportable Executive Briefing view: a 1-pager summary suitable for printing or screenshot, drawing from the standard deliverables. Optional per project.
 
+**REQ-SI-066** — Window provides interactive deliverable views for the graph-shaped artifacts in the standard deliverable suite: Dependency Atlas (navigable module graph with fan-in/fan-out, hot-spot highlighting, search), Intent-vs-Reality Map (side-by-side intent and ground-truth with drift highlighting), Constraint Coverage Matrix (row-per-constraint, column-per-implementation-unit, cell drill-down), Risk & Anomaly Surface (ranked list with severity, likelihood, impact filters). Each view supports click-through to the underlying graph nodes and from there to the source artifacts they were derived from (per REQ-SI-052 / `TRACED_TO` provenance edges).
+
+**REQ-SI-067** — Window's interactive graph-shaped views are exportable as static artifacts (SVG, PNG, PDF) preserving citation links where the export format supports them (PDF, interactive HTML). Static exports are reproducible from the same SI/G state per REQ-SI-102.
+
+**REQ-SI-068** — Window surfaces newly-promoted nodes, edges, and findings within a small bounded latency of their GraphLoader promotion. Target: p95 under 5 seconds for a typical project graph (≤100,000 nodes, ≤500,000 edges). Operators working in Studio and reviewers reading in Window see the same model state, with the Window's view eventually consistent within this latency budget.
+
 ### Identity (SI/I) — auth and authz
 
 **REQ-SI-070** — SI/I is a standalone service running in its own container per project. It is consulted by SI/S and SI/W on each authenticated request.
@@ -163,7 +169,7 @@ The BB (Blackboard) is the substrate inside Studio where parsers post DSL record
 
 **REQ-SI-090** — Each SI project writes its significant events to a chainblocks ledger at `projects/<project>/audit.ledger`. The ledger is created by `si init` (chainblocks genesis block) and survives `si destroy` (preserved in a configurable archive location).
 
-**REQ-SI-091** — The following events are appended to the audit ledger, each with the acting user's identity: `si.project.init`, `si.input.ingested`, `si.input.reclassified`, `si.parser.invoked`, `si.parser.failed`, `si.bb.proposal.posted`, `si.bb.proposal.promoted`, `si.bb.conflict.surfaced`, `si.bb.conflict.resolved`, `si.analyst.invoked`, `si.analyst.completed`, `si.finding.overridden`, `si.role.granted`, `si.role.revoked`, `si.export.created`, `si.import.applied`, `si.project.destroyed`.
+**REQ-SI-091** — The following events are appended to the audit ledger, each with the acting user's identity: `si.project.init`, `si.input.ingested`, `si.input.reclassified`, `si.parser.invoked`, `si.parser.completed`, `si.parser.failed`, `si.bb.proposal.posted`, `si.bb.proposal.promoted`, `si.bb.conflict.surfaced`, `si.bb.conflict.resolved`, `si.analyst.invoked`, `si.analyst.completed`, `si.finding.overridden`, `si.role.granted`, `si.role.revoked`, `si.export.created`, `si.import.applied`, `si.project.destroyed`.
 
 **REQ-SI-092** — Audit ledger entries use chainblocks' canonical block format per `MODEL.md` (chainblocks). The payload schema for each `kind` is documented in SI's own `MODEL.md`.
 
@@ -304,7 +310,7 @@ The `.sigdsl` format is the **typed intermediate** between parsers and GraphLoad
 | Studio BB substrate | REQ-SI-030 through 035 | 6 |
 | Analyst suite | REQ-SI-040 through 045 | 6 |
 | Graph (SI/G) | REQ-SI-050 through 056 | 7 |
-| Window (SI/W) | REQ-SI-060 through 065 | 6 |
+| Window (SI/W) | REQ-SI-060 through 068 | 9 |
 | Identity (SI/I) | REQ-SI-070 through 077 | 8 |
 | CLI | REQ-SI-080 through 084 | 5 |
 | Audit (chainblocks) | REQ-SI-090 through 093 | 4 |
@@ -323,7 +329,7 @@ The `.sigdsl` format is the **typed intermediate** between parsers and GraphLoad
 | Multi-user semantics | REQ-SI-NF-060 through 063 | 4 |
 | **Non-functional subtotal** | | **29** |
 
-**Total at v0.1:** 79 functional + 29 non-functional = **108 requirements.**
+**Total at v0.1:** 82 functional + 29 non-functional = **111 requirements.**
 
 *Counts validated against the actual REQ-SI-* and REQ-SI-NF-* definitions above by the SI SIG ingestion at `sig/queries/` (to be built alongside MODEL.md and USE-CASES.md).*
 

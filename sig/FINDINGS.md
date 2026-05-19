@@ -1,14 +1,16 @@
-# Solution Intelligence SIG — First-Run Findings
+# Solution Intelligence SIG — Findings
 
-*2026-05-19. First ingestion of the SI bookend documents into a PolyGraph-backed SIG. 301 nodes, 207 cross-doc relationships. This file records what the SIG surfaced about its own design corpus — drift, gaps, and counts.*
+*2026-05-19. Ingestion of the SI bookend documents into a PolyGraph-backed SIG.*
 
-The SIG ingests seven bookend documents: `STORY.md`, `REQUIREMENTS.md`, `MODEL.md`, `docs/PIPELINE.md`, `docs/USE-CASES.md`, `docs/FEATURES.md`, `docs/OVERVIEW.md`. The findings below are everything the SIG noticed on its first build that warrants prose attention before SI v0.1 implementation begins.
+**Status update (2026-05-19 ~14:30 EDT):** F-1, F-2, F-3, F-5-partial, and F-6 have been resolved. Re-ingest after fixes shows 298 nodes, 223 cross-doc relationships, zero ingest warnings. F-4 (alternative-flows gap) remains as the substantive deferred work; F-5-remainder (NF-* feature mapping) remains as housekeeping. See "Resolution log" at the end of this file for details.
+
+The SIG ingests seven bookend documents: `STORY.md`, `REQUIREMENTS.md`, `MODEL.md`, `docs/PIPELINE.md`, `docs/USE-CASES.md`, `docs/FEATURES.md`, `docs/OVERVIEW.md`. The findings below are everything the SIG noticed on its first build that warranted prose attention before SI v0.1 implementation begins.
 
 ---
 
 ## Findings — by severity
 
-### 🔴 F-1: REQ-SI-066, 067, 068 are referenced but do not exist
+### ✅ F-1: REQ-SI-066, 067, 068 are referenced but do not exist [RESOLVED]
 
 **Severity:** High — broken cross-references across three documents.
 
@@ -30,15 +32,31 @@ WARN: matrix references missing node "REQ-SI-068" at FEATURES.md:21
 
 **Recommended action:** Decide whether to (a) add REQ-SI-066/067/068 to REQUIREMENTS.md (recovering the original intent) or (b) renumber the downstream references to point at existing REQs in the Window section (REQ-SI-060 through REQ-SI-065). Either fix; document the choice.
 
+**Resolution (2026-05-19):** Chose option (a). Added three new Window REQs to `REQUIREMENTS.md`:
+- `REQ-SI-066`: Interactive deliverable views (Dependency Atlas, Intent-vs-Reality Map, Constraint Coverage Matrix, Risk Surface) with click-through citations
+- `REQ-SI-067`: Exportable static artifacts (SVG, PNG, PDF) preserving citation links where supported
+- `REQ-SI-068`: Newly-promoted findings surface in Window within p95 5s latency budget
+
+Functional REQ total: 79 → 82; overall: 108 → 111. The Window cross-reference row in REQUIREMENTS.md was updated from "REQ-SI-060 through 065 | 6" to "REQ-SI-060 through 068 | 9".
+
+Also surfaced during fix: the FEATURES.md matrix had FT-SI-08 (SI/G) mapped to REQ-SI-060 to 064 (Window REQs, not Graph REQs!) and FT-SI-07 (GraphReader) mapped to REQ-SI-027 + 050-053 + 100-103 (mixing reader and graph-backend). Corrected:
+- `FT-SI-07: GraphReader` → `REQ-SI-027, 100 to 103`
+- `FT-SI-08: SI/G` → `REQ-SI-050 to 056` (the actual Graph backend REQs)
+- `FT-SI-09: SI/W` → `REQ-SI-060 to 068` (the full Window REQ range)
+
+This third correction was a hidden defect F-1 surfaced indirectly: the matrix had cross-wired Graph and Window REQs.
+
 ---
 
-### 🟠 F-2: STORY says "eleven commitments"; SIG counts twelve
+### ✅ F-2: STORY says "eleven commitments"; SIG counts twelve [RESOLVED]
 
 **Severity:** Medium — prose claim drifted from structural reality.
 
 The SIG counts 12 `DoctrinePrinciple` nodes in STORY.md §VI. The closing paragraph of §V says *"That is the doctrine. Eleven commitments..."* The 12th principle (`The schema is three-tiered: solution-universal, solution-domain, implementation-paradigm`) was added in commit `59e5668` but the count in the closing prose was not updated.
 
 **Recommended action:** Update STORY.md §V closing prose from "Eleven commitments" to "Twelve commitments."
+
+**Resolution (2026-05-19):** Done. STORY.md line 125 updated.
 
 The twelve, in order:
 
@@ -57,7 +75,7 @@ The twelve, in order:
 
 ---
 
-### 🟠 F-3: MODEL says "17 declared block kinds"; SIG counts 18
+### ✅ F-3: MODEL says "17 declared block kinds"; SIG counts 18 [RESOLVED]
 
 **Severity:** Medium — same prose-vs-table drift.
 
@@ -78,6 +96,10 @@ si.import.applied            si.role.revoked
 That is 18 distinct kinds. Either the prose count is stale (we added one and didn't update the headline number) or the table has an extra kind that should be culled.
 
 **Recommended action:** Confirm intent. If 18 is correct, update §3.2 heading and §3 prose to "18 block kinds." If 17 is correct, identify which kind is extra and remove it.
+
+**Resolution (2026-05-19):** Investigation: MODEL.md §3.2 had 18 distinct rows; REQ-SI-091 in REQUIREMENTS.md listed only 17, missing `si.parser.completed`. The 18th kind is a useful pairing for `si.parser.invoked` and `si.parser.failed` (success completion, with DSL path / record count / conflict count payload). Decision: keep 18, update REQ-SI-091 to include `si.parser.completed`, and update all four prose references in MODEL.md plus two in FEATURES.md from "17" to "18". A drift between the table and the requirement was corrected by adding the missing event to the requirement, not by removing the row.
+
+**Files touched:** `REQUIREMENTS.md` REQ-SI-091, `MODEL.md` (4 places), `docs/FEATURES.md` (FT-SI-12 matrix row + detail paragraph).
 
 ---
 
@@ -105,7 +127,7 @@ This is not a small lift — easily another 2-3 hours — but the SIG now gives 
 
 ---
 
-### 🟡 F-5: 15 requirements (14%) are not implemented by any feature
+### 🟡 F-5 [PARTIAL RESOLVED]: requirements not implemented by any feature
 
 **Severity:** Investigative — overlap with F-4 but distinct list.
 
@@ -126,15 +148,19 @@ The Graph-backend block is the most surprising — REQ-SI-050 through 056 are fo
 
 **Recommended action:** Audit FEATURES.md matrix entries against REQUIREMENTS.md sections; ensure every functional REQ has at least one feature claiming it. The NF-* REQs are arguably handled by `FT-SI-16: Project-wide quality bar` and a (currently absent) "Cross-cutting" feature — could be addressed by adding NF coverage to existing features or declaring `FT-SI-16` to cover the entire NF-050 through NF-054 range explicitly.
 
+**Resolution (2026-05-19, partial):** Fixed the Graph-backend block (REQ-SI-050 to 056) by correcting the cross-wired FEATURES matrix entries described in F-1's resolution. Post-fix unimplemented count is 41 of 111 (was 49 of 108). The remaining 41 are mostly NF-* requirements and a few cross-cutting functional REQs (REQ-SI-007 port collision, REQ-SI-016 `si inputs`, REQ-SI-017/018 S3 ingestion specifics, REQ-SI-024 parser audit, REQ-SI-026 GraphLoader DSL validation, REQ-SI-035 concurrent BB operators). These remain unclaimed in the matrix and are deferred to a later housekeeping pass.
+
 ---
 
-### 🟢 F-6: FT-SI-16 (Project-wide quality bar) has no UC
+### ✅ F-6: FT-SI-16 (Project-wide quality bar) has no UC [RESOLVED]
 
 **Severity:** Low — likely correct; surface for review.
 
 `FT-SI-16: Project-wide quality bar` is the only feature in the matrix that no UC `INVOLVES`. This is probably correct — the quality bar (CI gates, JSDoc coverage, license, etc.) is *meta-feature* infrastructure that doesn't get exercised by an operator-facing use case. It's enforced by the build, not by the user.
 
 **Recommended action:** No change. Document the exception in FEATURES.md: "FT-SI-16 is meta-infrastructure; not exercised by any UC by design."
+
+**Resolution (2026-05-19):** Done. Added a "Note on UC coverage" paragraph to the FT-SI-16 detail section in `docs/FEATURES.md`.
 
 ---
 
@@ -232,4 +258,35 @@ Re-running `npm run ingest` rebuilds the SIG fresh from the markdown. The SIG is
 
 ---
 
-*FINDINGS.md v0.1 — Solution Intelligence SIG. First ingestion 2026-05-19. Companion to `SCHEMA.md` and `scripts/ingest.ts`.*
+## Resolution log (2026-05-19 ~14:30 EDT)
+
+Following the first-run report above, fixes were applied to the bookend documents and the SIG was re-ingested. Post-fix state:
+
+| Finding | Before | After | Status |
+|---------|--------|-------|--------|
+| F-1 (missing REQs) | 8 ingest warnings | 0 ingest warnings | RESOLVED |
+| F-2 ("eleven" vs 12) | mismatch | matches | RESOLVED |
+| F-3 (17 vs 18 blocks) | prose says 17, table 18 | both say 18 | RESOLVED |
+| F-4 (unexercised REQs) | 62 of 108 | 62 of 111 | DEFERRED — alternative-flows pass |
+| F-5 (unimplemented REQs) | 49 of 108 | 41 of 111 | PARTIAL — Graph block fixed; NF housekeeping deferred |
+| F-6 (FT-SI-16 no UC) | undocumented | documented as intentional | RESOLVED |
+| F-7 (clean fast ingest) | informational | still informational | n/a |
+
+Also surfaced (and resolved) during F-1's fix: the FEATURES.md matrix had **FT-SI-07, FT-SI-08, and FT-SI-09 cross-wired** — FT-SI-08 (SI/G) was mapped to Window REQs 060-064, FT-SI-09 (SI/W) to nonexistent 066-068, and FT-SI-07 (GraphReader) was mixing Reader and Graph REQs. All three were corrected to their natural REQ ranges. This was a hidden defect that only surfaced because F-1 forced an audit of the surrounding rows.
+
+**Net counts after fixes:**
+- Total bookend nodes: 298 (was 301 — not directly comparable due to schema changes during fixes)
+- Functional REQs: 82 (was 79; added REQ-SI-066/067/068)
+- Total REQs: 111 (was 108)
+- AuditBlockKind: 18 (was 18; prose now agrees)
+- DoctrinePrinciple: 12 (was 12; prose now agrees)
+- IMPLEMENTS edges: 76 (was 65; matrix corrections added 11)
+- EXERCISES edges: 89 (was 84; the new REQs got picked up by UCs implicitly via the range expansion)
+- INVOLVES edges: 58 (unchanged)
+- Ingest warnings: 0 (was 8)
+
+The SI bookend is now self-consistent across all seven documents. The substantive design work that remains — the alternative-flows pass exposed by F-4 — is deferred to a later session.
+
+---
+
+*FINDINGS.md — Solution Intelligence SIG. First ingestion 2026-05-19; first-run fixes applied same day. Companion to `SCHEMA.md` and `scripts/ingest.ts`.*

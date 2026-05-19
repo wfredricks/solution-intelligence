@@ -16,12 +16,12 @@ A feature is what we **build**; a requirement is what we **promise**; a use case
 | **FT-SI-04: Studio BB substrate (proposals + conflicts)** | REQ-SI-030 to 034 | UC-2, UC-3, UC-11 |
 | **FT-SI-05: GraphLoader (sole writer to SI/G)** | REQ-SI-025, 030 to 034, 060 to 063 | UC-2, UC-3, UC-6 |
 | **FT-SI-06: Analyst suite (Inventory / DepAtlas / Intent-vs-Reality / Constraint Coverage / Risk / Modernization)** | REQ-SI-040 to 045 | UC-3, UC-4, UC-5, UC-6, UC-7, UC-8, UC-10 |
-| **FT-SI-07: GraphReader + standard deliverable suite** | REQ-SI-027, 050 to 053, 100 to 103 | UC-4, UC-5, UC-6, UC-7, UC-8, UC-10 |
-| **FT-SI-08: SI/G (durable graph, portable export/import)** | REQ-SI-060 to 064 | UC-5, UC-10, UC-12 |
-| **FT-SI-09: SI/W consumer window (role-scoped views)** | REQ-SI-066 to 068 | UC-3, UC-6, UC-7, UC-11, UC-12 |
+| **FT-SI-07: GraphReader + standard deliverable suite** | REQ-SI-027, 100 to 103 | UC-4, UC-5, UC-6, UC-7, UC-8, UC-10 |
+| **FT-SI-08: SI/G (durable graph, portable export/import)** | REQ-SI-050 to 056 | UC-5, UC-10, UC-12 |
+| **FT-SI-09: SI/W consumer window (role-scoped views)** | REQ-SI-060 to 068 | UC-3, UC-6, UC-7, UC-11, UC-12 |
 | **FT-SI-10: Identity (SI/I) + 5-role permission matrix** | REQ-SI-070 to 077 | UC-1, UC-3, UC-7, UC-9, UC-11, UC-12 |
 | **FT-SI-11: `si` CLI (full v0.1 surface)** | REQ-SI-080 to 084 | UC-1, UC-2, UC-3, UC-4, UC-9, UC-11, UC-12 |
-| **FT-SI-12: chainblocks audit integration (17 block kinds, user-attributed)** | REQ-SI-090 to 093 | UC-1, UC-2, UC-3, UC-11, UC-12 |
+| **FT-SI-12: chainblocks audit integration (18 block kinds, user-attributed)** | REQ-SI-090 to 093 | UC-1, UC-2, UC-3, UC-11, UC-12 |
 | **FT-SI-13: Output bucket as git-initialized tree** | REQ-SI-100, 104 to 106 | UC-4, UC-5, UC-7, UC-10 |
 | **FT-SI-14: DSL versioning + deterministic replay** | REQ-SI-110 to 115 | UC-2, UC-12 |
 | **FT-SI-15: Compose stack + port allocation + network isolation** | REQ-SI-001 to 006, NF-010 to NF-012 | UC-1, UC-11 |
@@ -120,7 +120,7 @@ The CLI is the **primary surface for v0.1**; Studio and Window are the web UIs. 
 
 ### FT-SI-12: chainblocks audit integration
 
-SI consumes chainblocks as a library. The 17 declared block kinds in MODEL.md §3.2 cover the project lifecycle, ingestion, parsing, BB activity, analyst runs, finding overrides, role grants/revocations, and exports/imports.
+SI consumes chainblocks as a library. The 18 declared block kinds in MODEL.md §3.2 cover the project lifecycle, ingestion, parsing, BB activity, analyst runs, finding overrides, role grants/revocations, and exports/imports.
 
 Every block carries `actor.userId` (REQ-SI-076), making the audit trail person-attributed, not "the system did X." This is what makes the audit defensible across years (UC-12).
 
@@ -169,6 +169,8 @@ SI ships to the bar declared in `knowledge/playbooks/github-published-projects.m
 - License declared (Apache 2.0 default for OSS-bound projects)
 
 This is what makes the project credible whether shipped as `@solution-intelligence/*` internally, or open-sourced as `wfredricks/solution-intelligence` on GitHub.
+
+**Note on UC coverage.** FT-SI-16 is meta-infrastructure: it is enforced by the build pipeline, not exercised by an operator-facing use case. It has no dedicated UC by design. This is the only feature in the matrix without an `INVOLVES` UC; the gap is intentional and recorded here so the SIG's coverage queries do not surface it as a defect.
 
 ---
 

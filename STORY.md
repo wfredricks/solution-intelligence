@@ -122,7 +122,7 @@ The doctrine that emerges from this is not a list of commitments asserted from a
 
 **Open-source-grade quality from day one.** Solution Intelligence is internal first, but designed for open-source release. Every component is built to the bar set by the GitHub Published Projects playbook. If we cannot ship a component publicly, we should not ship it internally either. The discipline of public-quality work is what keeps the methodology honest with itself.
 
-That is the doctrine. Eleven commitments, each one a treaty between artisan and methodology, each one a place where a real tension was named and resolved. The methodology's strength is not that the commitments are correct in isolation. Its strength is that both voices were heard before the treaty was signed.
+That is the doctrine. Twelve commitments, each one a treaty between artisan and methodology, each one a place where a real tension was named and resolved. The methodology's strength is not that the commitments are correct in isolation. Its strength is that both voices were heard before the treaty was signed.
 
 ---
 

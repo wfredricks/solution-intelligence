@@ -536,7 +536,7 @@ async function main() {
   // === AuditBlockKind — parse MODEL.md §3.2 table ==========================
   {
     const lines = docs.model.lines;
-    const start = lineNumOf(lines, /^### 3\.2 — The 17 block kinds/);
+    const start = lineNumOf(lines, /^### 3\.2 — The \d+ block kinds/);
     const end = lineNumOf(lines, /^### 3\.3 —/);
     if (start > 0 && end > 0) {
       for (let i = start; i < end; i++) {

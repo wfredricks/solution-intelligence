@@ -14,7 +14,7 @@ Six interlocking models are specified:
 
 1. **The DSL** (`.sigdsl`) — the typed intermediate stream between parsers and GraphLoader
 2. **The Graph** (SI/G) — node and edge schemas the durable artifact contains
-3. **Audit event payloads** — the 17 chainblocks block kinds SI emits, with payload shapes
+3. **Audit event payloads** — the 18 chainblocks block kinds SI emits, with payload shapes
 4. **Template manifests** — the JSON declaration a project starts from
 5. **Project compose model** — the on-disk layout and Docker compose stack
 6. **Identity model** — user records, role grants, permission matrix, token shape
@@ -424,7 +424,7 @@ GraphLoader enforces these on every promotion. Violations are recorded as `si.bb
 
 ## 3 — Audit Event Payloads
 
-SI emits 17 declared chainblocks block kinds. Each carries a structured payload. All blocks follow the chainblocks canonical block format (see chainblocks' own `MODEL.md`); the SI-specific contribution is the per-kind payload schema below.
+SI emits 18 declared chainblocks block kinds. Each carries a structured payload. All blocks follow the chainblocks canonical block format (see chainblocks' own `MODEL.md`); the SI-specific contribution is the per-kind payload schema below.
 
 ### 3.1 — Common payload fields
 
@@ -436,7 +436,7 @@ Every SI audit-event payload contains:
 | `projectId` | Y | The SI project id |
 | `correlation` | N | Optional `{ "requestId": "...", "parentBlock": N }` for tracing related events |
 
-### 3.2 — The 17 block kinds
+### 3.2 — The 18 block kinds
 
 | Kind | Payload (in addition to common) |
 |------|----------------------------------|
@@ -811,7 +811,7 @@ This is the bridge between intent and implementation that STORY.md promises. The
 
 `MODEL.md` is the result of distilling the §"Component models" sketches in `STORY.md`, the schema obligations in `REQUIREMENTS.md`, the pipeline architecture in `docs/PIPELINE.md`, and the bookend-bundle precedent set by `artifacts/chainblocks/MODEL.md`.
 
-The role permission matrix in §6.3 is the canonical declaration for **REQ-SI-074**. The 17 chainblocks block kinds in §3.2 are the canonical declaration for **REQ-SI-091**. The DSL schema in §1 is the canonical declaration for **REQ-SI-110 through REQ-SI-115**. The promotion policy in §2.4 is the canonical declaration for the doctrinal anchor in STORY.md §"The doctrinal anchor."
+The role permission matrix in §6.3 is the canonical declaration for **REQ-SI-074**. The 18 chainblocks block kinds in §3.2 are the canonical declaration for **REQ-SI-091**. The DSL schema in §1 is the canonical declaration for **REQ-SI-110 through REQ-SI-115**. The promotion policy in §2.4 is the canonical declaration for the doctrinal anchor in STORY.md §"The doctrinal anchor."
 
 Where this document and STORY.md disagree, STORY.md governs intent and MODEL.md governs format; the contradiction is a defect and should be filed.
 
