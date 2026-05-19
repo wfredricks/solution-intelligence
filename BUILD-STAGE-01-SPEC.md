@@ -84,52 +84,72 @@ Produce the **poly-repo foundation** for Solution Intelligence v0.1. After Stage
 
 ---
 
-## Architecture decision: Poly-repo
+## Architecture decision: Poly-repo with publishability-based layout
 
-Per Bill's decision 2026-05-19 16:25 EDT: SI v0.1 is poly-repo, not monorepo. Each of the following will be its own independent Git repository:
+Per Bill's decisions 2026-05-19 16:25 EDT (poly-repo) and 17:39 EDT ("nested if never useful standalone, flat otherwise"): SI v0.1 is poly-repo, with the layout split by *standalone-publishability*. Three repos that could stand alone as useful libraries to others are placed flat as siblings of the existing `polygraph`, `bangauth`, and `chainblocks` repos. Five repos that are SI-internal (never useful outside Solution Intelligence as a whole) are nested under `si-build/`.
 
-| Repo name | Purpose | Stage that fills it |
-|-----------|---------|---------------------|
-| `solution-intelligence-cli` | The `si` CLI (`init`, `up`, `down`, `ingest`, `analyze`, `report`, `verify`, `grant`, etc.) | Stages 2, 3, 4, 5, 6, 7 |
-| `solution-intelligence-identity` | SI/I — bangauth-based Identity service, OIDC adapter stub | Stage 2 |
-| `solution-intelligence-graph-adapter` | SI/G — PolyGraph adapter, GraphLoader, DSL validator | Stage 3 |
-| `solution-intelligence-studio` | SI/S — BB substrate, dev UI, parser registry, analyst host | Stage 4 |
-| `solution-intelligence-window` | SI/W — consumer UI, role-scoped views | Stage 6 |
-| `solution-intelligence-parsers` | Parser library (markdown-intent, csharp-treesitter stub) | Stage 4 |
-| `solution-intelligence-analysts` | Analyst library (Inventory, DependencyAtlas, IntentVsReality, ConstraintCoverage, RiskSurface) | Stage 5 |
-| `solution-intelligence-templates` | Template manifests (`prose-doc` ready, `csharp-to-servicenow` stubbed) | Stages 4 + 5 |
+### Flat repos (standalone-publishable; siblings of polygraph/bangauth/chainblocks)
 
-**Stage 1 creates the eight repos with their foundations only.** Stages 2-7 add product code to each as needed.
+These could become useful to other projects beyond SI. They live at the top of `artifacts/`.
 
-Each repo lives at `~/.openclaw/workspace/artifacts/<repo-name>/` and has its own independent Git history. They are *not* nested under `artifacts/solution-intelligence/`; that directory remains the SI bookend (STORY, REQUIREMENTS, MODEL, etc.) and is not itself a workspace package.
+| Repo name | Purpose | Path | Stage that fills it |
+|-----------|---------|------|---------------------|
+| `solution-intelligence-graph-adapter` | SI/G — PolyGraph adapter, GraphLoader, three-tier-schema enforcement, DSL validator, chainblocks audit integration. Useful to anyone building a graph-shaped audit-attached system. | `artifacts/solution-intelligence-graph-adapter/` | Stage 3 |
+| `solution-intelligence-parsers` | Parser library (markdown-intent, csharp-treesitter stub, future PDF/log/SQL parsers). The parser interface is portable; other projects could write parsers against it. | `artifacts/solution-intelligence-parsers/` | Stage 4 |
+| `solution-intelligence-analysts` | Analyst library (Inventory, DependencyAtlas, IntentVsReality, ConstraintCoverage, RiskSurface). The analyst interface is a reusable pattern; other projects could write analysts against it. | `artifacts/solution-intelligence-analysts/` | Stage 5 |
+
+### Nested repos (SI-internal; under si-build/)
+
+These are useful only as parts of Solution Intelligence as a whole. They live under `artifacts/si-build/` to keep `artifacts/` clean.
+
+| Repo name | Purpose | Path | Stage that fills it |
+|-----------|---------|------|---------------------|
+| `solution-intelligence-cli` | The `si` CLI (`init`, `up`, `down`, `ingest`, `analyze`, `report`, `verify`, `grant`, etc.). SI-specific by definition. | `artifacts/si-build/cli/` | Stages 2, 3, 4, 5, 6, 7 |
+| `solution-intelligence-identity` | SI/I — a thin wrapper around bangauth specialized for SI's 5-role model and per-project grant semantics. The substrate (`bangauth`) stands alone; SI's wrapper does not. | `artifacts/si-build/identity/` | Stage 2 |
+| `solution-intelligence-studio` | SI/S — BB substrate + dev UI + parser/analyst host. SI's workshop. (Note: STORY anticipates that the BB substrate may eventually be extracted as a standalone `@blackboard/core` library; that extraction is post-v0.1 work. For v0.1, the studio is nested.) | `artifacts/si-build/studio/` | Stage 4 |
+| `solution-intelligence-window` | SI/W — consumer UI, role-scoped views. SI-specific. | `artifacts/si-build/window/` | Stage 6 |
+| `solution-intelligence-templates` | Template manifests (`prose-doc` ready, `csharp-to-servicenow` stubbed). SI-specific by definition. | `artifacts/si-build/templates/` | Stages 4 + 5 |
+
+**Stage 1 creates all eight repos with their foundations only.** Stages 2-7 add product code to each as needed.
+
+Each repo has its own independent Git history. They are *not* nested under `artifacts/solution-intelligence/`; that directory remains the SI bookend (STORY, REQUIREMENTS, MODEL, etc.) and is not itself a workspace package.
+
+**Publishability is fluid:** a nested repo that proves its standalone value over time (Studio's BB substrate is the most likely candidate) can be moved from nested to flat. Stage 1 captures today's honest split; future versions may revisit.
 
 ### Inter-repo dependencies
 
-Stage 1 will declare the dependency edges in each repo's `package.json` even though the dependencies don't yet have published versions:
+Stage 1 declares the dependency edges in each repo's `package.json`:
 
 ```
-solution-intelligence-cli
-   ├─ depends on → solution-intelligence-identity
-   ├─ depends on → solution-intelligence-graph-adapter
-   ├─ depends on → solution-intelligence-studio
-   └─ depends on → solution-intelligence-templates
+solution-intelligence-cli                   (nested)
+   ├─ depends on → solution-intelligence-identity         (nested sibling)
+   ├─ depends on → solution-intelligence-graph-adapter    (flat parent dir)
+   ├─ depends on → solution-intelligence-studio           (nested sibling)
+   └─ depends on → solution-intelligence-templates        (nested sibling)
 
-solution-intelligence-studio
-   ├─ depends on → solution-intelligence-graph-adapter
-   ├─ depends on → solution-intelligence-parsers
-   └─ depends on → solution-intelligence-analysts
+solution-intelligence-studio                (nested)
+   ├─ depends on → solution-intelligence-graph-adapter    (flat parent dir)
+   ├─ depends on → solution-intelligence-parsers          (flat parent dir)
+   └─ depends on → solution-intelligence-analysts         (flat parent dir)
 
-solution-intelligence-window
-   └─ depends on → solution-intelligence-graph-adapter (read-only)
+solution-intelligence-window                (nested)
+   └─ depends on → solution-intelligence-graph-adapter    (flat parent dir, read-only)
 
-solution-intelligence-graph-adapter
-   └─ depends on → polygraph (existing repo at ~/.openclaw/workspace/artifacts/polygraph)
+solution-intelligence-graph-adapter         (flat)
+   └─ depends on → polygraph                              (flat sibling)
 
-solution-intelligence-identity
-   └─ depends on → bangauth (existing repo at ~/.openclaw/workspace/artifacts/bangauth)
+solution-intelligence-identity              (nested)
+   └─ depends on → bangauth                               (flat parent dir)
 ```
 
-For local development, use **`file:` references** in `package.json` pointing at the sibling repo on disk (the same pattern `chainblocks/sig` uses to depend on `polygraph`). When a repo is published, the `file:` reference is swapped for a real semver constraint. **Stage 1 uses `file:` references throughout.**
+For local development, use **`file:` references** in `package.json` pointing at the sibling repo on disk. **The path depends on the dependent repo's nesting level:**
+
+- **Flat-to-flat** (e.g. `graph-adapter` → `polygraph`): `"polygraph": "file:../polygraph"`
+- **Nested-to-nested** (e.g. `cli` → `identity`, both under `si-build/`): `"@solution-intelligence/identity": "file:../identity"`
+- **Nested-to-flat** (e.g. `cli` → `graph-adapter`, cli is nested, graph-adapter is flat): `"@solution-intelligence/graph-adapter": "file:../../solution-intelligence-graph-adapter"`
+- **Nested-to-external-flat** (e.g. `identity` → `bangauth`): `"bangauth": "file:../../bangauth"`
+
+When a repo is published, the `file:` reference is swapped for a real semver constraint. **Stage 1 uses `file:` references throughout.**
 
 ---
 
@@ -274,14 +294,26 @@ For each of the eight repos:
 
 Inter-repo dependency wiring (for repos that have them):
 
-- [ ] `solution-intelligence-cli` has `file:../solution-intelligence-identity`, `file:../solution-intelligence-graph-adapter`, `file:../solution-intelligence-studio`, `file:../solution-intelligence-templates` in its dependencies.
-- [ ] `solution-intelligence-studio` has `file:../solution-intelligence-graph-adapter`, `file:../solution-intelligence-parsers`, `file:../solution-intelligence-analysts` in its dependencies.
-- [ ] `solution-intelligence-window` has `file:../solution-intelligence-graph-adapter` in its dependencies.
-- [ ] `solution-intelligence-graph-adapter` has `file:../polygraph` in its dependencies.
-- [ ] `solution-intelligence-identity` has `file:../bangauth` in its dependencies.
-- [ ] Running `npm install` in each consumer repo successfully resolves the `file:` reference to the sibling.
+Flat repos (at `artifacts/`):
+- [ ] `solution-intelligence-graph-adapter` has `"polygraph": "file:../polygraph"` in its dependencies.
+
+Nested repos (at `artifacts/si-build/`):
+- [ ] `si-build/cli` has these in its dependencies:
+  - `"@solution-intelligence/identity": "file:../identity"`
+  - `"@solution-intelligence/studio": "file:../studio"`
+  - `"@solution-intelligence/templates": "file:../templates"`
+  - `"@solution-intelligence/graph-adapter": "file:../../solution-intelligence-graph-adapter"`
+- [ ] `si-build/studio` has these in its dependencies:
+  - `"@solution-intelligence/graph-adapter": "file:../../solution-intelligence-graph-adapter"`
+  - `"@solution-intelligence/parsers": "file:../../solution-intelligence-parsers"`
+  - `"@solution-intelligence/analysts": "file:../../solution-intelligence-analysts"`
+- [ ] `si-build/window` has `"@solution-intelligence/graph-adapter": "file:../../solution-intelligence-graph-adapter"` in its dependencies.
+- [ ] `si-build/identity` has `"bangauth": "file:../../bangauth"` in its dependencies.
 
 End-to-end:
+- [ ] Running `npm install` in each consumer repo successfully resolves every `file:` reference to the sibling.
+
+Per-repo end-to-end:
 
 - [ ] All eight repos pass their `npm test` from a clean checkout (delete `node_modules`, re-run `npm install`, re-run `npm test`).
 - [ ] No repo references the others by path outside of `package.json`'s `file:` declaration.
