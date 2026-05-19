@@ -1,348 +1,159 @@
 # The Solution Intelligence Story
 
-*Why this project exists, who it's for, what it produces, and the doctrine that shapes its design.*
+*The aspirational document for Solution Intelligence — why it exists, what it claims, who it asks something of, and what it expects to leave behind. The structured reference (components, roles, deliverables, build path) lives in `docs/OVERVIEW.md`. The wire-format specifications live in `MODEL.md`. The numbered obligations live in `REQUIREMENTS.md`. This file is none of those. This file is the story.*
 
-**Status:** Left-bookend draft, 2026-05-18.
+**Status:** Left-bookend, 2026-05-19.
 **License (intended):** Apache 2.0 (internal first, open-source eventually).
-**First instantiations:** DLA Stores (C# → ServiceNow migration), chainblocks (prose-only smoke test).
+**First instantiations:** DLA Stores (C# → ServiceNow migration), chainblocks (prose-only smoke test through the `prose-doc` template).
 
 ---
 
-## The problem
+## I — The moment
 
-Every government and enterprise software engagement starts the same way: a customer hands over a heterogeneous bundle of artifacts — source code, design documents, RFPs, transaction logs, compliance specifications, SME interviews, runbooks — and asks "what is this, what does it do, what are we going to do about it?"
+There is a moment, every so often, when a profession discovers that the work it has been doing one project at a time has a shape. The shape was always there. The practitioners felt its outline in their hands without naming it, repeated its motions across engagements without articulating its grammar, and lived inside it for years before anyone wrote it down.
 
-Today, the answer comes through **bespoke effort**:
-- A senior engineer reads enough of the codebase to develop an opinion
-- An architect reads enough of the design docs to find the seams
-- A capture manager reads enough of the RFP to know what's binding
-- An analyst reads enough of the logs to spot the anomalies
-- Everyone produces slides; a roll-up document gets assembled; the engagement begins
+When the moment arrives and the shape is finally named, three things happen at once. The first is recognition — *yes, that is what we have been doing all along.* The second is acceleration — once the pattern is named, it can be taught, and the next generation does not have to relearn it from scratch. The third is the harder one: the naming begins to fix what was, until that point, intuitive and adaptive; the practice calcifies; new generations inherit the practice without the experience that originally justified it. This is the cost of any methodology, and it is the cost worth paying for the long stretches when the methodology is right.
 
-This works once. It is wasteful by the third engagement, because **the same pattern of inputs → analysis → standard artifacts is being executed by hand, every time, with no carryover.**
+Software has been through this before. Lean and the Toyota Production System gave us flow and pull and the discipline of treating manufacturing as a system rather than a heroism. Agile gave us iteration and customer-presence and the discipline of admitting that requirements are discovered, not declared. The Phoenix Project — perhaps the closest analog to what is being attempted here — narrated DevOps into existence by walking us through one fictional team's collapse and recovery, embedding the practices in a story we could feel rather than a manual we had to memorize. Each of those methodologies was right for its moment. Each was eventually superseded. Each left a substrate of practice behind that the next thing inherited.
 
-We have done a version of this five or six times already in 2025–2026: AuditInsight (DLA P2P transactions), ALMSS (AFRL COBOL modernization), DLA Stores (incoming C# → ServiceNow), PIEE (DLA Java analysis), Eden Township (ordinance graph), and several smaller proofs. Each engagement reinvented its own ingestion pipeline, its own graph schema, its own analyst chain, its own deliverable format.
+We are in such a moment now. And it is a particular moment, distinct from the ones that produced Lean and Agile and DevOps. **AI agents are entering the systems-analysis loop for the first time.** They will read codebases, classify artifacts, propose graph structure, draft compliance mappings, and produce findings — at scales no human team could match. Some of what they produce will be brilliant. Some of it will be confident, fluent hallucination presented in the same register as the brilliant work. The practices we establish *now*, while the field is still being shaped, will determine whether the next decade of AI-augmented solution intelligence is built on provenance and trust or on plausible-sounding output at industrial scale.
 
-**The pattern is already there in our work.** What's missing is the framework that pulls it together so the *next* engagement is a one-day instantiation, not a one-month build.
-
-That framework is Solution Intelligence.
+This is the moment Solution Intelligence is being set down for. Not as the final word. As the next right step.
 
 ---
 
-## What Solution Intelligence is (one paragraph)
+## II — The practitioner
 
-**Solution Intelligence (SI) is a project framework — a standardized, instantiable kit that ingests a heterogeneous bundle of project inputs (source code, design docs, requirements, RFPs, transaction data, configuration, SME notes — anything) and produces a queryable Solution Intelligence Graph (SI/G) plus a standard set of analytical artifacts.** Each SI instantiation runs in Docker, knows how to treat each kind of input correctly (code as ground truth, design docs as aspirational intent, RFPs as binding constraints, logs as evidence, SME notes as tribal knowledge), automates as much of the analysis as possible, and produces deep, actionable intelligence in the form of standard deliverables suitable for a customer engagement.
+Picture a senior solutions architect — call her by her role rather than a name, because the role is the point. She has stood up six versions of the same factory in the last two years. AuditInsight against DLA's procurement chain. ALMSS for the Air Force's COBOL legacy. DLA Stores' C# to ServiceNow. PIEE's Java analysis. Eden Township's ordinance graph. A few smaller proofs. Different customers, different artifacts, different questions — and the same arc every time. Ingest the heterogeneous bundle. Make sense of it. Produce the deliverable. Move on.
 
-It is the **off-the-shelf factory** for the pattern we have been building one-off six times. After SI, a new engagement looks like: instantiate a Studio, drop the inputs in, run the analysis, hand over the deliverable.
+By the third engagement she could see the shape. By the sixth it was undeniable. **The work was repeating, but nothing she built was accumulating.** Each engagement was fresh effort against the same shape, and when the deliverable shipped and the team disbanded, the framework she had hand-built was either retired with the project or carried forward in her own head — useful to her, useless to anyone else, gone the day she was on the next thing.
 
----
+She does not think this is inevitable. She also does not yet know how to stop. The customer expectations are bespoke-shaped. The tooling does not exist. The senior-practitioner identity she has built her career on is precisely the identity of someone who *reads the codebase carefully, sits with the SMEs, writes the deliverable in her own voice* — and she is not sure that identity survives the methodology she suspects is needed. She suspects she is about to be asked to give up some of the artistry to ship the practice. She is not sure that trade is one she wants to make.
 
-## Who is this for?
-
-- **Solutions architects and capture teams** at consulting / federal services firms who need to produce defensible analyses of unfamiliar customer systems on tight engagement timelines
-- **Government modernization programs** (DoD, civilian agencies) facing legacy codebase analysis (COBOL, Java, C#, mainframe) where the input is heterogeneous and the deliverable must be auditable
-- **Compliance and ATO teams** who need traceability from binding requirements (NIST controls, RFP clauses, contract language) all the way down to specific lines of code that demonstrably satisfy them
-- **Internal product teams** who want to inspect their own systems through the same SIG lens, surfacing intent-vs-reality drift before customers do
-
-If you have a bundle of project artifacts and a question — "what's in this?", "does it meet X?", "where's the risk?", "what would migration cost?", "what was the original intent?", "can we trust this audit trail?" — Solution Intelligence is the workbench that answers it.
+This is the wound the methodology has to address: **repetition without accumulation, and the fear that productizing the practice will hollow out the practice.** Every commitment in Solution Intelligence has to earn its way past that fear.
 
 ---
 
-## The components
+## III — The legitimate objection
 
-Solution Intelligence has four named components. They are referred to by short IDs throughout the SI documentation.
+There is a voice that lives next to the practitioner's. It belongs to the senior colleague she respects most, the one who has been doing this work the longest, and it argues — in good faith, with experience behind it — that the methodology is the wrong move. It is worth hearing in full, because the methodology is only as strong as its answer to it.
 
-Note on naming: "Blackboard" (BB) is the **substrate inside Studio** — the working surface where parsers, GraphLoader, analysts, and GraphReader interact. It is not a separate top-level component. We refer to it as "Studio's BB substrate" or just "the BB substrate" when we need to distinguish it from Studio's developer UI.
+> The work is artisanal. It does not productize. Every engagement is genuinely different — different customer, different artifacts, different questions, different stakes — and a framework that pretends otherwise will deliver mediocre output at scale precisely because it has to be general. The senior practitioner who reads the codebase carefully, sits with the SMEs for two weeks, and writes the deliverable in their own voice will always produce better intelligence than a templated pipeline, because the practitioner is doing pattern-matching the framework cannot do. You are not capturing the practice in your methodology; you are codifying the part of the practice that is mechanical, and the part that is mechanical was already not the part that mattered.
+>
+> Worse: the AI agents you are worried about will, within a few years, do the mechanical parts of this work fluently. They will not need your epistemic-class schema or your single-writer GraphLoader or your audit ledger. They will produce findings in natural language, justify them with citations to the source artifacts, and adapt to each engagement's particulars in ways your framework cannot. The discipline you are trying to encode now is a layer of friction that your successors will route around — politely or otherwise — when the agentic tooling becomes good enough. You are not setting down the practices the next decade will inherit. You are setting down the practices the next decade will *obsolete*.
+>
+> Cultivation across generations is a beautiful idea. It also assumes that the next generation will care enough about *your* model to extend it rather than rebuild a fresher one from the same primary sources, with newer tools, faster. Your audit-ledger-backed SIG sounds defensible. So did COBOL.
 
-### SI/S — Studio
+That is the voice. It is not a fantasy objection. Senior practitioners hold it. AI vendors marketing competing approaches will articulate it in their own terms over the coming years. The methodology that does not have an answer to it ready will not survive its first encounter with a thoughtful skeptic.
 
-The **developer workbench, which is the Blackboard.** Studio = the BB substrate + a developer UI on top of it. Operationally there is no "Studio without BB" or "BB without Studio" — they are the same thing, viewed from two angles. Studio is what an engineer, analyst, or build-engineer uses to *make* the intelligence.
+The answer Solution Intelligence offers — and earns, slowly, through everything that follows — is **not that the voice is wrong. The voice is partly right, and the methodology says so out loud.** Much of the practice *is* artisanal in ways that resist framework-ization. AI *will* obsolete much of what we build. Cultivation *is* a wager, not a guarantee. But there is a residue the voice misses, and the residue is what the methodology is for: *some* practices are exactly what the next decade needs, and *will be* inherited even when the surrounding tooling is replaced. The doctrine of provenance. The discipline of epistemic honesty. The insistence that every action is attributable to a named person. The treatment of the model as a cultivated artifact rather than a one-time deliverable.
 
-Studio is responsible for:
-- Receiving inputs (S3 bucket ingestion, drag-and-drop files, directory ingestion, API uploads)
-- Routing each input to the right parser based on its declared epistemic class (see "The doctrinal anchor" below)
-- Running the parser → DSL → GraphLoader pipeline; promotions land in SI/G
-- Running the analyst chain (analysts read SI/G + post derived findings back to the BB substrate, which GraphLoader then promotes)
-- Producing deliverable artifacts via GraphReader (reports, exports, generated code) into the output bucket
-- Providing a developer UI to inspect BB substrate state, manually trigger analysts, re-ingest, override findings, and intervene
-- Writing every significant event to a chainblocks ledger with user attribution
-
-**Studio internals (the BB substrate doing the work):**
-
-This is the classic blackboard architecture pattern (Hayes-Roth 1985, refined through decades of expert-systems and multi-agent work): a shared workspace where specialist knowledge sources post hypotheses, where a controller decides which contributions advance the analysis, and where the eventual answer emerges from coordinated specialist work.
-
-The BB substrate inside Studio is where:
-- Parsers post structural proposals as a typed `.sigdsl` stream ("this file declares 3 classes")
-- GraphLoader pulls validated proposals and promotes them to SI/G
-- Analysts post derived findings ("class Foo has cyclic dependencies on Bar")
-- Cross-cutting reasoners post integration claims ("this code section is the implementation of RFP clause §3.4.1")
-- Conflicts get noticed and surfaced ("design doc says X; code does Y")
-- Promotion rules decide what becomes durable in SI/G
-
-Studio is the *box* you instantiate per project. Each Solution Intelligence engagement gets its own Studio container set. **The BB substrate may eventually be extracted as a standalone library** (see doctrine §8 below) — in that case, what graduates is the substrate alone; Studio's developer UI stays with Studio.
-
-### SI/G — Graph
-
-The **durable artifact.** This is the Solution Intelligence Graph (the "SIG" in our vocabulary): a queryable knowledge graph that encodes everything the Studio's Blackboard work has accumulated about the project. Typed nodes (CodeFile, IntendedBehavior, Constraint, Evidence, Pattern, SMEClaim, ...) and typed edges (`INTENDS_TO_IMPLEMENT`, `SATISFIES`, `DRIFTS_FROM`, `EVIDENCED_BY`, `TAGGED_AS`, `CITED_BY`, ...) with provenance every step.
-
-SI/G is what survives the engagement. After Studio is torn down, after Window is no longer being viewed, the Graph remains as the auditable record of the project's intelligence. Adopters can re-query, extend with new inputs, or hand it to the next analyst.
-
-### SI/W — Window
-
-The **consumer-facing UI.** Distinct from Studio's developer UI: Window is what an analyst, reviewer, customer, or stakeholder uses to *see* the intelligence — read-mostly, polished, dashboard-shaped. Where Studio is the workshop (raw, operational, "here are the levers"), Window is the gallery (curated, navigable, "here is what we found").
-
-Window connects to SI/G (queries the graph), is hosted alongside (or distinctly from) Studio, and renders the standard deliverable artifacts: inventory reports, dependency atlases, intent-vs-reality maps, constraint coverage matrices, risk surfaces, modernization roadmaps, pattern classifications, executive briefings.
-
-### SI/I — Identity
-
-The **authentication and authorization layer.** Solution Intelligence is multi-user from day one — real identities, real roles, real audit attribution. Identity is not bolted on later; it is a first-class component.
-
-SI/I is responsible for:
-- Authenticating operators, analysts, reviewers, and customers (bangauth by default for dev/internal use; OIDC adapter for enterprise and government deployments)
-- Issuing session tokens consumed by both SI/S and SI/W
-- Resolving per-project role assignments (who is Owner / Operator / Analyst / Reviewer / Customer on this project)
-- Attribution: every operator action carries the acting user id, which is what chainblocks records (not "the system did X," but "alice@example.com did X")
-
-**Default roles** (per-project; a person may have different roles on different projects):
-
-| Role | What they can do in SI/S (Studio) | What they can do in SI/W (Window) |
-|------|-----------------------------------|-----------------------------------|
-| **Owner** | Everything (configure, ingest, run, override, export, delete) | Everything |
-| **Operator** | Ingest, run analysts, view BB, accept findings, add tribal knowledge | View everything |
-| **Analyst** | View BB (read-only), run analysts on existing inputs, add tribal knowledge | View everything |
-| **Reviewer** | (no Studio access) | View everything; comment on findings |
-| **Customer** | (no Studio access) | View curated deliverable subset; no raw BB |
-
-SI/I ships as a small service (its own container) consulted by SI/S and SI/W on each request. Default backend is [bangauth](../bangauth/); production deployments swap in an OIDC adapter against the customer's IDP.
+These are the inheritances. The specific Studio container layout is not. The particular Docker compose stack is not. Even the choice of PolyGraph over Neo4j is not. **The methodology is the discipline; the tooling is the scaffolding the discipline is being practiced inside of right now.** Build the AI agents. Supersede our tooling. Route around our specific machinery when something better exists. Just inherit the discipline. That is what is being set down. Everything else is scaffolding.
 
 ---
 
-## How the components compose (one project)
+## IV — The kernel
 
-A single Solution Intelligence engagement instantiates its **own container set** — strict isolation, no shared services across projects. One Docker host can run many SI projects side by side; each is a self-contained compose stack.
+When you strip Solution Intelligence to its kernel, it is simple:
 
-```
-SI project (e.g. "dla-stores")  — its own Docker compose stack
-├── SI/I — Identity service (bangauth or OIDC adapter)
-├── SI/S — Studio (BB substrate + developer UI)
-│   ├── Parsers (Tree-sitter, ANTLR, PDF, markdown, ...)
-│   ├── BB substrate (where parsers post .sigdsl, where analysts work)
-│   ├── GraphLoader (the only writer to SI/G)
-│   ├── Analysts (Inventory, Dependency Atlas, ...)
-│   ├── GraphReader (produces deliverables into the output bucket)
-│   ├── Developer UI (web; operator-facing; concurrent-operator support)
-│   └── chainblocks ledger (audit trail of significant events, with user attribution)
-├── SI/G — Graph (backed by PolyGraph or Neo4j; durable)
-└── SI/W — Window (web; consumer-facing; role-scoped views)
-```
+> **Collect the facts about something. Build a traceable model from those facts. Produce defensible artifacts from the model. Cultivate the model so it is transferable to the next generation.**
 
-Plus two external buckets that bracket the pipeline:
-- **Input bucket** (S3) — customer's raw data (codebase, design docs, RFPs, evidence, ...)
-- **Output bucket** (S3) — deliverable artifacts in git-folder structure (reports, graph export, derived code, DSL, audit ledger archive). SI/W reads from this bucket.
+That is the whole methodology in two breaths. The expansion follows from the kernel and is forced by honesty.
 
-One SI/S, one SI/G, one SI/W, one SI/I per project. Multiple operators connect concurrently to the same SI/S; their actions are attributed individually in the chainblocks ledger and in BB substrate state. Each is a Docker service; the whole engagement is `docker compose up`.
+*Collect the facts* means recognizing that facts arrive in different epistemic registers — source code is hard truth, design documents are aspiration, RFPs are binding constraint, logs are evidence, SME notes are tribal knowledge, industry standards are reference material. The methodology cannot survive flattening these into a single bag of "documents"; the discipline begins with refusing that flattening.
+
+*Build a traceable model* means the model is queryable, every node and edge carries provenance back to the input it derives from, and every change to the model is attributable to a specific human or agent acting on someone's behalf. The model is a graph because graphs are how heterogeneous things relate; the model is typed because typing is how heterogeneity stays legible; the model is provenanced because provenance is how the model stays trustworthy across the years that matter.
+
+*Produce defensible artifacts* means the reports, matrices, atlases, and roadmaps are not standalone documents. They are *queries against the model*, citing the model, regeneratable from the model, defensible because the model is defensible. A reader of an SI deliverable can click any claim and walk back through the cited graph nodes to the source artifacts they derive from. The deliverable is not the asset. The model is the asset. The deliverable is how the model gets used.
+
+*Cultivate the model* means a Solution Intelligence Graph is not a deliverable that exists at a point in time and then ages. It is a living artifact-of-record. Three years after the engagement that produced it, an Inspector General can audit it and an analyst can extend it. Five years after, a successor team can pick it up and continue the modernization. Ten years after, an AI agent that has not yet been designed will be able to query it — because the schema is portable, the provenance is intact, the audit trail proves nothing has been altered since, and the doctrine of epistemic honesty was held all the way through. The methodology that produced the graph is also the methodology that maintains it. Cultivation is part of the practice, not an afterthought.
+
+The model is the asset. The artifacts are how the model gets used. Cultivation is what keeps the model alive across generations. That is Solution Intelligence in one paragraph, and everything that follows is in service of it.
 
 ---
 
-## The doctrinal anchor — input classes and their epistemic status
+## V — The doctrine as resolved negotiation
 
-This is the heart of Solution Intelligence and the most important architectural commitment.
+The doctrine that emerges from this is not a list of commitments asserted from above. It is the **negotiated treaty** between the practitioner's worry — that productizing will hollow out the practice — and the methodology's claim — that some disciplines must be set down or be lost when AI scales the work. Read each of the commitments below in that register. Every one of them is the resolution of an argument that was had honestly before the commitment was made.
 
-**Different inputs have different epistemic status.** They cannot be treated as a flat bag of "documents." The framework must encode the distinctions and let analysts reason accordingly.
+**Honor the epistemic status of every input.** The artisanal voice winning a specific argument against the let's-just-ship-faster voice. Code is not design is not contract is not evidence is not tribal knowledge. The framework encodes the distinction; parsers respect it; the Graph preserves it; deliverables surface the conflicts (intent vs reality, contract vs implementation) rather than smoothing them away. This is the doctrinal anchor. Everything else is downstream of it.
 
-| Input class | Examples | Epistemic status | How SI treats it |
-|-------------|----------|------------------|------------------|
-| **Ground truth** | Source code (C#, COBOL, Java, SQL, ...), compiled binaries, database schemas, deployed configuration | Hard truth — describes what the system actually does | Parsed authoritatively; SI/G nodes derived from it are the factual claims about behavior. Conflicts with other inputs are resolved against ground truth unless explicitly noted otherwise. |
-| **Aspirational intent** | Design documents, architecture diagrams, ADRs, vision white papers, slide decks | What was *intended* — may be wrong, outdated, or never fully implemented | Encoded as `IntendedBehavior` nodes; linked to ground-truth nodes via `INTENDS_TO_IMPLEMENT` edges; conflicts surface as `DRIFTS_FROM` edges. Critical not to treat as truth. |
-| **Constraint / contract** | RFPs, Performance Work Statements (PWS), Statements of Work (SOW), SLAs, compliance specs (NIST, FAR, FedRAMP) | Binding obligations the system must demonstrably satisfy | Encoded as `Constraint` nodes; impact analysis surfaces what ground-truth code/configuration must satisfy them; uncovered constraints are flagged as risk. |
-| **Evidence / history** | Application logs, transaction records, test outputs, incident reports, audit trails, observability data | What actually happened in operation | Encoded as `Evidence` nodes; supports "this constraint was met / violated on this date" claims; chainblocks ledgers may BE evidence in this sense. |
-| **Tribal knowledge** | Interview notes, meeting transcripts, SME annotations, Slack-channel archeology | High value, low rigor, person-attributed | Encoded as `TribalKnowledge` nodes with confidence scores and source-person attribution; typically annotates other nodes rather than standing alone. |
-| **Reference material** | Industry standards (NIST 800-53, FAR clauses), architectural patterns (EIP, POSA, WAF, FAR), prior-art codebases | External truth, slow-moving | Encoded as `ReferencePattern` nodes; classification edges from project artifacts to these establish "this code implements pattern X" or "this requirement maps to control Y". |
+**One project, one container set; no cross-pollution.** Each engagement runs in its own isolated stack. Customer data does not mix — not because the framework is fragile, but because confidentiality and classification matter, and the discipline of strict isolation is the only honest version of multi-customer work. Templates and parsers are shared across the framework; *running data* is not. There will be no Solution Intelligence SaaS in which everyone's models share a database.
 
-Every SI project starts by declaring **which input classes are present** and **which parsers handle each kind**. This is the "tuning" — the customer-specific mix.
+**The model is the durable artifact; everything else is rebuildable.** The harder negotiation. The senior practitioner wanted the *deliverable* to be the artifact — the polished report in the customer's hands, the slide deck on the sponsor's desk. The methodology insists the *model* is the artifact and the deliverable is a query against it. This is the negotiation that makes cultivation possible at all. If the deliverable is the artifact, you do the work once and it ages. If the model is the artifact, you cultivate it across generations and the deliverables follow.
 
-A C# → ServiceNow migration is heavy on Ground Truth + Aspirational Intent + Constraint. A transaction-audit engagement is heavy on Evidence + Reference Material. A blank-sheet design exercise is heavy on Aspirational Intent + Constraint and *light* on Ground Truth (the code doesn't exist yet).
+**Every action is attributable to a named person.** The productize voice conceding to a deep artisanal value. SI does not record "the system did X." It records "alice@example.com promoted this finding at this time while holding the Operator role on this project." Every entry in the audit trail names a human. This is what makes the cultivated model survivable across the years that matter — because when an Inspector General audits a claim five years from now, the chain ends at a person, not at a process.
 
-The framework supports all combinations. The doctrine is: **honor the epistemic status of every input; never silently flatten the distinction.**
+**chainblocks audits the significant events.** Not all events; the significant ones — ingestions, parses, promotions, classifications, overrides, exports. The audit ledger is small enough to verify in one command and complete enough to defend any claim in any deliverable. It is the substrate of trust that lets the rest of the methodology hold up across generations. We did not invent it because it was novel; we invented it because the methodology would not be honest without it.
 
----
+**Automate as much as possible; intervene where judgment matters.** The explicit boundary between the mechanical and the artisanal. SI does not try to win the argument about which is which. It places the boundary in tooling: parsers run automatically, analysts chain automatically, classifications propose automatically, conflicts surface automatically — and where judgment matters, the operator (a real person, with a name, holding a documented role) intervenes through Studio's developer UI. Automation never substitutes for judgment, but it eliminates the toil that would otherwise crowd judgment out.
 
-## The standard deliverable suite
+**Templates are libraries of practice; instances are configuration.** The middle path. A new engagement does not write code. It selects a template (cobol-modernization, csharp-to-servicenow, transaction-analysis, prose-doc) and configures the inputs. New parsers and analysts become new templates after they have been proven on a real engagement. The framework grows by accretion, not by per-engagement forking. The artisan's particulars are honored in configuration; the recurring shape is honored in the templates.
 
-A Solution Intelligence project produces a defined set of artifacts. Not every project produces every artifact — the set is calibrated to which input classes were present and which questions the engagement is asking. But the *menu* is standard:
+**The Window respects its audience and the role of its viewer.** Studio is the workshop — dense, raw, action-oriented, for operators. Window is the gallery — read-mostly, polished, narrative-shaped, for analysts and reviewers and customers. They are not the same product in two skins. They are two different products built from the same model. Role-based view scoping is enforced at the API boundary, not just hidden in the UI: a Customer cannot URL-hack their way to the BB substrate.
 
-| Artifact | What it answers | Primary input classes | Audience |
-|----------|----------------|-----------------------|----------|
-| **Inventory Report** | What's in here? (files, modules, languages, sizes, complexity) | Ground truth | Tech leads, capture team |
-| **Dependency Atlas** | What depends on what? (module graph, fan-in/fan-out, hot spots) | Ground truth | Architects, migration planners |
-| **Intent-vs-Reality Map** | Where does the design lie? (design claims vs code reality) | Ground truth + aspirational | Architects, sponsors |
-| **Constraint Coverage Matrix** | What contracts are demonstrably met? (RFP/SLA → code traceability) | Constraint + ground truth | Compliance, contracts |
-| **Risk & Anomaly Surface** | What should we worry about? (complexity hotspots, dead code, undocumented patterns, single-points-of-failure) | Ground truth + evidence | Tech leads, PMs |
-| **Modernization Roadmap** | How do we move from here to there? (phased migration path with effort estimates) | Ground truth + constraint | Sponsors, capture team |
-| **Pattern Classification** | What patterns is this code an instance of? (NIST/EIP/POSA/FAR tagging on relevant artifacts) | Ground truth + reference | ATO/FedRAMP teams |
-| **Tribal Knowledge Annotation Layer** | What do the people who know say? (SME claims attached to specific artifacts, with confidence) | Tribal | Future maintainers |
-| **Executive Briefing** | The two-slide / one-pager version | (synthesis of above) | Leadership, customer |
-| **MCP / HTTP API Endpoint** | Live programmatic access | (queries against SI/G) | Downstream tools, agents, future engagements |
-| **Audit Trail** | What did the analysis itself do, in what order, with what reasoning? | (Studio's chainblocks ledger) | Customer review, compliance |
+**Multi-user from day one.** The productize voice acknowledging that artisanal work has always been collaborative when it mattered most. Solution Intelligence is built for engagements with two-to-many participants. Single-user mode is a degenerate case, not the design center. Identity, authorization, concurrent operators, role-based view scoping, and per-user attribution in the audit trail are all v0.1 surface area. We do not ship "the auth pass" later.
 
-The suite is the deliverable. The Graph is the substrate. Window is how a stakeholder reads them. Studio is where they were made.
+**Cultivate the model; do not just produce it.** The commitment the original draft of this document did not name and could not have named. A Solution Intelligence Graph is a living artifact, not a delivered document. Extensions are first-class. Re-querying is first-class. Handing the model to a successor team is first-class. Three years from now, the model should still be readable and still be extendable. The methodology that produces the graph is the methodology that cultivates it.
+
+**Open-source-grade quality from day one.** Solution Intelligence is internal first, but designed for open-source release. Every component is built to the bar set by the GitHub Published Projects playbook. If we cannot ship a component publicly, we should not ship it internally either. The discipline of public-quality work is what keeps the methodology honest with itself.
+
+That is the doctrine. Eleven commitments, each one a treaty between artisan and methodology, each one a place where a real tension was named and resolved. The methodology's strength is not that the commitments are correct in isolation. Its strength is that both voices were heard before the treaty was signed.
 
 ---
 
-## The role of chainblocks
+## VI — One engagement, in motion
 
-[chainblocks](../chainblocks/) is consumed by SI as a library. Its role is **auditing the significant events** that occur inside Studio and across SI/BB activity. Not every keystroke — the significant events:
+What does this look like when an engagement actually happens?
 
-- Each ingestion (which file, when, by what parser, what input class declared, with what hash)
-- Each analyst run (which analyst, on what subgraph, producing what findings)
-- Each promotion of a Blackboard hypothesis to the durable Graph
-- Each classification decision (this code implements NIST IA-5(1))
-- Each manual operator action via the Studio dev UI (kicking off re-analysis, marking a finding as accepted, overriding a classifier)
-- Each export / deliverable generation
+It begins with a customer handing over a bundle of artifacts — a tarball of code, a folder of design documents, a few RFPs, a year of transaction logs, maybe a few hours of recorded SME interviews. An Owner instantiates a Solution Intelligence project from a template, and the project becomes a self-contained Docker compose stack: a Studio for the operators to work in, a Graph for the durable model, a Window for analysts and reviewers and customers to read from, and an Identity service that makes every action attributable to a real person.
 
-Every Studio carries a chainblocks ledger at `<project>/audit.ledger`. Three years after the engagement, an assessor can run `chainblocks-verify` and prove the analytical history is intact, then `read({ kind: 'si.classification.*' })` to see every classification ever made for a given component, with reasoning preserved exactly as it was at the time.
+The Owner grants roles. Operators ingest. Parsers read each input artifact and emit a typed proposal stream, classified by epistemic kind. The GraphLoader validates, promotes, and writes — and emits an audit event for every promotion, every rejection, every conflict surfaced. Analysts run, propose findings, post them to the Blackboard substrate inside Studio; operators arbitrate the proposals that require judgment. The Window shows the deliverables emerging in close to real time, scoped to each viewer's role: a Reviewer sees the full model, a Customer sees only the curated subset, an Operator sees the workshop. Findings get cited back to source. Conflicts get surfaced rather than smoothed. Decisions get attributed.
 
-This is the fingerprint that distinguishes Solution Intelligence from "we ran some scripts and made some slides." Every claim in the deliverable traces back through an immutable chain to its source input.
+At some point the engagement reaches a milestone: the first version of the deliverable suite is ready. GraphReader produces the standard artifacts into an output bucket structured as a git-initialized folder tree. The customer can clone it. Sponsors review it. Auditors trace any cited finding back to its underlying graph node, back to its source artifact, back to the audit event that records who promoted it.
 
----
+And then — and this is where the methodology earns its keep against the colleague's objection — the engagement does not end when the deliverables ship. The model continues. New inputs arrive: runtime evidence accumulates, the design document gets updated, a new compliance requirement lands. The graph extends; the deliverables regenerate; the audit ledger grows. Six months later, a successor team picks up where the original engagement left off; the graph carries everything they need, and everything they propose to add is attributable to them, distinguished cleanly from what came before. Three years later, an Inspector General audits a single claim in the original deliverable and walks back through the model and the ledger to verify it. Ten years later — well, that is the part we are designing for and cannot yet describe in detail, because the tools of ten years from now have not been built yet.
 
-## The doctrine
+What we can promise is that the model, if cultivated, will still be readable. The schema is portable. The provenance is intact. The audit trail is verifiable. That is the legacy claim, and it is the claim the practitioner — the one who has built six bespoke factories and is on the verge of the seventh — gets to make for the first time in her career.
 
-Solution Intelligence holds to a small set of design commitments. These are non-negotiable.
-
-### 1. Honor the epistemic status of every input
-
-Code is not design is not contract is not evidence is not tribal knowledge. The framework encodes the distinctions, parsers respect them, the Graph preserves them, and deliverables surface conflicts (intent vs reality, contract vs implementation) rather than smoothing them away.
-
-### 2. One container set per project; no cross-pollution
-
-DLA Stores' code, design, and RFP do not live in the same Graph as PIEE's — and they do not share a Studio process, an Identity service, a Window instance, or a Docker network. Each SI project is a self-contained compose stack. Templates and parsers are shared across the framework as code; *running data* is not. This is essential for client confidentiality, classification handling (some engagements are FOUO or higher), and clean teardown at engagement end.
-
-### 3. The Graph is the durable artifact; everything else is rebuildable
-
-Studio comes and goes per engagement. Window is a viewer. The Blackboard is the workshop. **The Graph is what the customer gets.** SI/G's schema is versioned; its serialization is portable; its provenance is preserved. Three years later it is still readable.
-
-### 4. chainblocks audits the significant events, with user attribution
-
-Tamper-evident audit is a property, not a feature. Every Studio writes its significant-event log to a chainblocks ledger, and **every entry carries the acting user's identity** (resolved through SI/I). The ledger records not just "X was done" but "X was done by user@example.com at time T with role R on project P." Verification of the analytical history is one command. The deliverable is defensible because the workflow is defensible — and because every action is attributable to a real person.
-
-### 5. Automate as much as possible; intervene where judgment matters
-
-A Solution Intelligence project should produce 80% of its deliverable without operator intervention. Parsers run automatically. Analysts chain automatically. Classifications propose automatically. The operator — through Studio's developer UI — reviews, accepts, overrides, and adds tribal knowledge for the cases where judgment matters. Automation never substitutes for judgment, but it eliminates the toil that would otherwise crowd judgment out.
-
-### 6. Templates are libraries of practice; instances are configuration
-
-A new engagement does not write code. It selects a template (cobol-modernization, csharp-to-servicenow, java-modernization, transaction-analysis, prose-doc), configures inputs, and runs. New parsers and analysts become new templates after they've proven themselves on a real engagement. The framework grows by accretion, not by per-engagement forking.
-
-### 7. The Window respects its audience and the role of its viewer
-
-Studio's developer UI is for operators: dense, raw, action-oriented. Window's consumer UI is for analysts and stakeholders: read-mostly, polished, narrative-shaped. They are not the same thing built in two skins. They are two different products built from the same Graph.
-
-Window further respects the role of its viewer (resolved through SI/I): a Reviewer sees everything in the Graph; a Customer sees only the curated deliverable subset, not the raw BB state or operator interventions. Role-based view scoping is enforced at the API boundary, not just hidden in the UI.
-
-### 8. Open-source-grade quality from day one
-
-Solution Intelligence is internal first, but **designed for open-source release.** Every project, every parser, every analyst, every template is built to the bar set by the GitHub Published Projects playbook. JSDoc, test pyramid, governance trio, CI quality gates. If we cannot ship a component publicly, we should not ship it internally either.
-
-### 9. Multi-user from day one; never an afterthought
-
-Solution Intelligence is built for engagements with two-to-many participants. Single-user mode is a degenerate case (one Owner on a project), not the design center. Identity, authorization, concurrent operators, role-based view scoping, and per-user attribution in the audit trail are all v0.1 surface area. We do not ship "the auth pass" later. The day SI/S accepts its first ingestion, it does so on behalf of a named operator.
+She gives up some artistry. She does not give up the practice. What she gains is the thing she had been working toward without naming it: **work that accumulates.**
 
 ---
 
-## What success looks like
+## VII — Success, and what we will not be
 
-Twelve months from now, the following statements should all be true:
+A small honesty section, because aspirational documents owe their reader honesty.
 
-- A new customer engagement can be instantiated as an SI project in **under a day**, not a month. The team selects a template, configures the inputs, and Studio is running.
+Twelve months from now, the following statements should all be true, or the methodology has not delivered what it claims:
+
+- A new customer engagement can be instantiated as an SI project in under a day, not a month.
 - All six of the precedent projects (AuditInsight, ALMSS, DLA Stores, PIEE, Eden Township, chainblocks) are re-instantiated as SI projects on the framework. The one-off pipelines are retired.
-- Three or more **new** engagements have been delivered using SI; the cost-per-engagement has dropped by 5×+.
-- A government adopter has reviewed the audit trail of an SI deliverable via chainblocks-verify and accepted it as evidence.
-- SI is npm/Docker-published as `@solution-intelligence/studio`, `@solution-intelligence/window`, etc., or — depending on the release decision — open-sourced as `wfredricks/solution-intelligence` on GitHub.
-- The **Studio Blackboard substrate** — what we'll likely extract as `@blackboard/core` — has been proven by use and is ready to graduate to its own library, consumed by SI and by future projects.
+- Three or more *new* engagements have been delivered using SI; the cost-per-engagement has dropped by 5×+.
+- A government adopter has reviewed the audit trail of an SI deliverable via `chainblocks-verify` and accepted it as evidence.
+- The Studio Blackboard substrate has been proven by use and is ready (or already extracted) as its own library.
+
+And the methodology refuses certain things explicitly. It is not a SaaS. It is not a single shared graph across all customers. It is not a general-purpose graph database. It is not a standalone blackboard product, not yet. It is not an LLM-only system; LLMs handle the residue of ambiguity, not the bulk of the work. It does not pronounce verdicts on the customer's behalf. It does not replace the capture team. Each of these refusals is a place where the methodology chose discipline over scope, and each of them is a place where the methodology will be tempted to relax the discipline. The temptations should be resisted. The full reference list of non-goals is in `docs/OVERVIEW.md`; this document only carries the principle: **scope is earned by discipline, not declared by ambition.**
 
 ---
 
-## What we will not build
+## VIII — The legacy
 
-The non-goals list, with explicit "no":
+We are taking the initial strides. They are strides, not the destination. **Solution Intelligence is the methodology this generation needs, designed honestly enough to be transcended by the next.**
 
-- ❌ **A single shared Graph across all projects.** Cross-pollination of customer data is a hard line. Templates and parsers are shared; data isn't. (See doctrine §2.)
-- ❌ **A SaaS / hosted multi-tenant Solution Intelligence service.** SI is multi-user *within an engagement* — several operators, analysts, reviewers, and customers collaborate on one project. SI is NOT multi-tenant *across engagements* on a shared backend; each engagement gets its own container set. No "solution-intelligence.io" public offering.
-- ❌ **A general-purpose graph database.** SI/G is PolyGraph or Neo4j under the hood; SI does not invent its own. The graph engine is a substrate choice, not a product surface.
-- ❌ **A general-purpose blackboard system marketed separately, today.** The Blackboard inside Studio will likely *become* a standalone project — but only after it has been proven by use in SI. We do not build it speculatively.
-- ❌ **An LLM-only system.** Templates and analysts use LLMs where appropriate (tiered processing per the AuditInsight v2 lesson), but the framework is deterministic-first. Parsers are real parsers. Graphs are real graphs. LLMs solve disambiguation, not arithmetic.
-- ❌ **Sharp interpretive judgment on behalf of the customer.** SI surfaces findings; it does not declare "this codebase is bad" or "this RFP is unwinnable." The operator and the customer interpret. We provide the substrate, the structure, and the standard artifacts.
-- ❌ **Replication of capture-management workflow.** SI feeds capture and delivery; it does not replace the human capture team. We are the intelligence layer, not the BD organization.
+We are not building the final tool. We are not pretending this is the last word on AI-era systems analysis, or even on graph-shaped solution intelligence. We are establishing the practice from which the future evolutions will inherit their discipline. The provenance. The attribution. The epistemic honesty. The cultivation. The treatment of the model as an artifact-of-record rather than a one-time deliverable. The insistence that every action ends at a named person.
 
----
+These are the inheritances. Whatever supersedes Solution Intelligence — and something will, eventually, because methodologies have lifespans — will discard whatever specific components we built (the Studio, the Window, the particular shape of the pipeline) and find better ones. That is the right outcome. The methodology was never the point. The discipline was the point.
 
-## How Solution Intelligence relates to its sibling projects
+The most we can do is leave the practice in a shape the next generation can inherit. That is what we are doing. That is what this document is for. **Solution Intelligence is the kernel of truth from which the future evolutions will flow** — for as long as the kernel is honest enough to be worth flowing from.
 
-| Project | Role relative to SI |
-|---------|---------------------|
-| **chainblocks** | A library. SI uses chainblocks ledgers for audit. The two are designed together but ship independently. |
-| **PolyGraph** | A library. SI/G is typically backed by PolyGraph (default) or Neo4j (heavy codebase analysis). |
-| **bangauth** | A library. If SI/W or SI/S need auth at deployment time, bangauth is the default. |
-| **(future) Blackboard project** | Likely the harvested SI/BB once it has been proven through SI's use. Speculative until SI demands extraction. |
-| **twin** | Independent project. The twin may consume SI Graphs as a knowledge source in the future, but SI does not depend on twin. |
-| **AuditInsight, ALMSS, etc.** | Will eventually be re-instantiated as SI projects, replacing their one-off pipelines. |
-
----
-
-## The build path
-
-Solution Intelligence is being built to the bar set by the GitHub Published Projects playbook. Before v0.1.0 ships:
-
-| Pillar | What lands |
-|--------|-----------|
-| Narrative | `README.md`, `STORY.md` (this file), `docs/WHY-SI.md`, `docs/DESIGN.md` |
-| Reference | `docs/API.md` (HTTP + MCP for SI/S), JSDoc ≥90% on exports, `docs/USE-CASES.md`, `examples/` with template instantiations |
-| Governance | `LICENSE` (Apache 2.0), `CONTRIBUTING.md`, `SECURITY.md` (project-isolation threat model), `CODE_OF_CONDUCT.md`, `CHANGELOG.md` |
-| Automation | `.github/workflows/ci.yml`, template-instantiation smoke tests, the SIG ingestion clean-run gate |
-
-### v0.1 scope (the minimum viable framework)
-
-- **One template** ready: `csharp-to-servicenow` (driven by the DLA Stores engagement)
-- **One smoke-test template**: `prose-doc` (re-instantiates the chainblocks bookend bundle through SI; proves the framework handles small/easy cases)
-- **Per-project container set** — each SI project is its own compose stack with no shared services
-- **SI/I (Identity)** running as its own service with bangauth as the default backend and an OIDC adapter stub for enterprise/gov deployments
-- **5-role authorization model** (Owner / Operator / Analyst / Reviewer / Customer) enforced at the SI/S and SI/W API boundaries
-- **SI/S (Studio)** runnable as a Docker service with the developer UI and concurrent-operator support
-- **SI/G (Graph)** persistent (PolyGraph default; Neo4j optional)
-- **SI/W (Window)** present as a minimal but functional consumer UI with role-scoped views
-- **chainblocks** wired in for significant-event auditing, with every entry carrying the acting user's identity
-- **CLI** (`si init`, `si ingest`, `si analyze`, `si report`, `si verify`) — operator commands authenticate against SI/I before acting
-- The standard analyst suite for v0.1: Inventory, Dependency Atlas, Intent-vs-Reality, Constraint Coverage, Risk Surface, Pattern Classification (the others are v0.2+)
-
-### Out of scope for v0.1
-
-- The full multi-template library (COBOL, Java, transaction analysis come in v0.2)
-- The fully-automated executive briefing generator (v0.2)
-- Customer-supplied OIDC adapters beyond a generic stub (v0.2 — the first real customer's IDP is the calibration target)
-- Cross-project user management (each project manages its own role assignments in v0.1; a separate "SI admin console" managing users across projects is a v0.2 candidate if demand emerges)
-- Open-source release (v0.2 or later, after internal proving)
-- Extraction of the Blackboard as a standalone project (v0.3, possibly later — speculative)
-
----
-
-## The voice of this project
-
-A few notes for anyone writing Solution Intelligence docs going forward:
-
-- **Honor the epistemic distinctions.** Never speak of "documents" as a flat bag. Always say which class.
-- **First-person plural ("we") when stating doctrine; second-person ("you") when explaining usage.** Never "the user" in product-voice contexts — prefer the role (Operator, Analyst, Reviewer, Customer) so the doc is precise about who is doing what.
-- **Component IDs (SI/S, SI/G, SI/W, SI/I) are short stable references.** Use them in cross-doc citations. "BB" or "the BB substrate" refers to the substrate inside Studio; it is not a top-level component.
-- **The deliverable suite list is the menu, not the menu's items.** A given project produces a calibrated subset, not the whole list.
-- **chainblocks is "the audit trail," not "the blockchain."** Tamper-evident, not tamper-proof. Cite the audit when it matters; do not promise more than the substrate delivers.
-- **Audit attribution is always to a person, never to "the system."** Every action in SI is attributable to a named user; documentation should read accordingly ("the Operator triggers ingestion," not "the system ingests").
+🖇️
 
 ---
 
 ## Provenance
 
-This story is the left-bookend of Solution Intelligence. It was written 2026-05-18 by Bhai (the personal twin) with Bill (the architect), the morning after the pattern was named for the first time. The naming came from Bill: Solution Intelligence as the overarching project, Studio as the workbench, Blackboard as the substrate inside, Graph as the durable artifact, Window as the consumer-facing UI. SI/I (Identity) was added the same morning when Bill stipulated that SI must be multi-user from day one; the 5-role model and bangauth-plus-OIDC default fell out of that conversation. Late morning, Bill rendered the runtime pipeline diagram and clarified that **Studio = the Blackboard** (substrate + developer UI), collapsing SI/BB from a top-level component into Studio's internal substrate. The component count went from five to four. The same revision introduced the DSL as a first-class intermediate artifact and S3 buckets at both ends of the pipeline.
+This story was named on 2026-05-18 by Bill Fredricks (the architect) with Bhai (the personal twin), the morning after the pattern was named for the first time. The naming came from Bill: Solution Intelligence as the overarching project, Studio as the workbench, Blackboard as the substrate inside, Graph as the durable artifact, Window as the consumer-facing UI. SI/I (Identity) was added the same morning when Bill stipulated that SI must be multi-user from day one; the 5-role model and bangauth-plus-OIDC default fell out of that conversation. The runtime pipeline diagram landed late-morning and clarified that **Studio = the Blackboard** (substrate + developer UI), collapsing SI/BB from a top-level component into Studio's internal substrate. The component count went from five to four. The same revision introduced the DSL as a first-class intermediate artifact and S3 buckets at both ends of the pipeline.
 
-Subsequent documents (`REQUIREMENTS.md`, `MODEL.md`, `docs/USE-CASES.md`, `docs/FEATURES.md`) will refine this story into specifications. Code is built against the specifications. If the code drifts from this story, the story is updated (with a changelog entry) or the code is corrected — never both silently.
+This rewrite of the Story — from structured specification overview to story-shaped aspirational document — happened on 2026-05-19. The catalyst was Bill's observation that the original Story mixed perspectives uncomfortably and asked us to think about whether the document could be a real story. We worked through it together: `docs/STORY-CONCEPT.md` as a first narrative draft, `docs/STORY-MIND.md` as Dramatica-style analytical scaffolding (Overall Story, Main Character, Influence Character, Subjective), and then this document — the story-shaped Story informed by both. The previous structured version is preserved at `docs/STORY-V0-ORIGINAL.md` for reference; the reference material it carried (components in detail, role matrix table, deliverable suite table, sibling projects, build path) moved to `docs/OVERVIEW.md`.
 
-🖇️
+Subsequent documents (`REQUIREMENTS.md`, `MODEL.md`, `docs/PIPELINE.md`, `docs/USE-CASES.md`, `docs/FEATURES.md`, `docs/OVERVIEW.md`) refine this story into specifications and reference. Code is built against the specifications. If the code drifts from this story, the story is updated (with a changelog entry) or the code is corrected — never both silently. The story governs what we are *for*; the specifications govern what we *build*; the code governs what we *ship*.
