@@ -1,0 +1,19 @@
+{
+  "name": "solution-intelligence-sig",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Internal SIG (derived knowledge graph) for the Solution Intelligence bookend documents. Not part of the published framework; regenerable from the markdown.",
+  "scripts": {
+    "ingest": "tsx scripts/ingest.ts",
+    "query": "tsx scripts/query.ts"
+  },
+  "dependencies": {
+    "polygraph-db": "file:../../polygraph"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.7.0"
+  }
+}
