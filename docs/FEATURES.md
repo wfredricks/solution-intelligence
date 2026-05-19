@@ -10,22 +10,22 @@ A feature is what we **build**; a requirement is what we **promise**; a use case
 
 | Feature | REQs satisfied | UCs exercised |
 |---------|----------------|---------------|
-| **FT-SI-01: Project lifecycle (init / up / down / destroy)** | REQ-SI-001 to 006, 080, 082 | UC-1 |
-| **FT-SI-02: Input ingestion + epistemic classification** | REQ-SI-010 to 015 | UC-2, UC-9 |
-| **FT-SI-03: Parser registry + .sigdsl emission** | REQ-SI-020 to 023, 110 to 115 | UC-2, UC-5 |
-| **FT-SI-04: Studio BB substrate (proposals + conflicts)** | REQ-SI-030 to 034 | UC-2, UC-3, UC-11 |
-| **FT-SI-05: GraphLoader (sole writer to SI/G)** | REQ-SI-025, 030 to 034, 060 to 063 | UC-2, UC-3, UC-6 |
+| **FT-SI-01: Project lifecycle (init / up / down / destroy)** | REQ-SI-001 to 007, 080, 082 | UC-1, UC-18 |
+| **FT-SI-02: Input ingestion + epistemic classification** | REQ-SI-010 to 018 | UC-2, UC-9, UC-13 |
+| **FT-SI-03: Parser registry + .sigdsl emission** | REQ-SI-020 to 024, 026, 110 to 115 | UC-2, UC-5, UC-13 |
+| **FT-SI-04: Studio BB substrate (proposals + conflicts)** | REQ-SI-030 to 035, NF-060 to NF-063 | UC-2, UC-3, UC-11, UC-13, UC-14 |
+| **FT-SI-05: GraphLoader (sole writer to SI/G)** | REQ-SI-025, 026, 030 to 034 | UC-2, UC-3, UC-6, UC-14 |
 | **FT-SI-06: Analyst suite (Inventory / DepAtlas / Intent-vs-Reality / Constraint Coverage / Risk / Modernization)** | REQ-SI-040 to 045 | UC-3, UC-4, UC-5, UC-6, UC-7, UC-8, UC-10 |
-| **FT-SI-07: GraphReader + standard deliverable suite** | REQ-SI-027, 100 to 103 | UC-4, UC-5, UC-6, UC-7, UC-8, UC-10 |
-| **FT-SI-08: SI/G (durable graph, portable export/import)** | REQ-SI-050 to 056 | UC-5, UC-10, UC-12 |
-| **FT-SI-09: SI/W consumer window (role-scoped views)** | REQ-SI-060 to 068 | UC-3, UC-6, UC-7, UC-11, UC-12 |
-| **FT-SI-10: Identity (SI/I) + 5-role permission matrix** | REQ-SI-070 to 077 | UC-1, UC-3, UC-7, UC-9, UC-11, UC-12 |
-| **FT-SI-11: `si` CLI (full v0.1 surface)** | REQ-SI-080 to 084 | UC-1, UC-2, UC-3, UC-4, UC-9, UC-11, UC-12 |
-| **FT-SI-12: chainblocks audit integration (18 block kinds, user-attributed)** | REQ-SI-090 to 093 | UC-1, UC-2, UC-3, UC-11, UC-12 |
-| **FT-SI-13: Output bucket as git-initialized tree** | REQ-SI-100, 104 to 106 | UC-4, UC-5, UC-7, UC-10 |
+| **FT-SI-07: GraphReader + standard deliverable suite** | REQ-SI-027, 100 to 106 | UC-4, UC-5, UC-6, UC-7, UC-8, UC-10, UC-15 |
+| **FT-SI-08: SI/G (durable graph, portable export/import)** | REQ-SI-050 to 056, NF-033 | UC-5, UC-10, UC-12, UC-15 |
+| **FT-SI-09: SI/W consumer window (role-scoped views)** | REQ-SI-060 to 068, NF-002, NF-003, NF-024 | UC-3, UC-6, UC-7, UC-11, UC-12, UC-16 |
+| **FT-SI-10: Identity (SI/I) + 5-role permission matrix** | REQ-SI-070 to 077, NF-020, NF-021 | UC-1, UC-3, UC-7, UC-9, UC-11, UC-12, UC-16 |
+| **FT-SI-11: `si` CLI (full v0.1 surface)** | REQ-SI-080 to 084 | UC-1, UC-2, UC-3, UC-4, UC-9, UC-11, UC-12, UC-17, UC-18 |
+| **FT-SI-12: chainblocks audit integration (18 block kinds, user-attributed)** | REQ-SI-090 to 093, NF-012, NF-063 | UC-1, UC-2, UC-3, UC-11, UC-12, UC-17 |
+| **FT-SI-13: Output bucket as git-initialized tree** | REQ-SI-104 to 106 | UC-4, UC-5, UC-7, UC-10, UC-15 |
 | **FT-SI-14: DSL versioning + deterministic replay** | REQ-SI-110 to 115 | UC-2, UC-12 |
-| **FT-SI-15: Compose stack + port allocation + network isolation** | REQ-SI-001 to 006, NF-010 to NF-012 | UC-1, UC-11 |
-| **FT-SI-16: Project-wide quality bar (CI gates, docs, license, README)** | REQ-SI-NF-050 to NF-056 | (all UCs implicitly) |
+| **FT-SI-15: Compose stack + port allocation + network isolation** | REQ-SI-006, 007, NF-010, NF-011, NF-022, NF-023, NF-030, NF-031, NF-032 | UC-1, UC-11, UC-13, UC-16, UC-18 |
+| **FT-SI-16: Project-wide quality bar (CI gates, docs, license, README, cross-cutting NF)** | REQ-SI-NF-001, NF-040 to NF-044, NF-050 to NF-054 | (all UCs implicitly) |
 
 Every numbered requirement in `REQUIREMENTS.md` maps to at least one feature; every feature traces to at least one use case.
 
@@ -171,6 +171,8 @@ SI ships to the bar declared in `knowledge/playbooks/github-published-projects.m
 This is what makes the project credible whether shipped as `@solution-intelligence/*` internally, or open-sourced as `wfredricks/solution-intelligence` on GitHub.
 
 **Note on UC coverage.** FT-SI-16 is meta-infrastructure: it is enforced by the build pipeline, not exercised by an operator-facing use case. It has no dedicated UC by design. This is the only feature in the matrix without an `INVOLVES` UC; the gap is intentional and recorded here so the SIG's coverage queries do not surface it as a defect.
+
+**Cross-cutting NF coverage.** FT-SI-16 also carries the cross-cutting non-functional requirements that no operator-facing feature naturally owns: the documentation declarations (REQ-SI-NF-040 through 044 — API docs, CLI docs, parser-manifest declarations, analyst-manifest declarations, template-manifest declarations) and the CI quality gates (REQ-SI-NF-050 through 054 — tests/typecheck/lint passing, coverage thresholds, JSDoc coverage, smoke tests, SIG ingestion clean-run). These are properties of the build, not features of the running system; they are enforced once by CI configuration and inherited by every component thereafter.
 
 ---
 

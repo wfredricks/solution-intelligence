@@ -2,7 +2,14 @@
 
 *2026-05-19. Ingestion of the SI bookend documents into a PolyGraph-backed SIG.*
 
-**Status update (2026-05-19 ~14:30 EDT):** F-1, F-2, F-3, F-5-partial, and F-6 have been resolved. Re-ingest after fixes shows 298 nodes, 223 cross-doc relationships, zero ingest warnings. F-4 (alternative-flows gap) remains as the substantive deferred work; F-5-remainder (NF-* feature mapping) remains as housekeeping. See "Resolution log" at the end of this file for details.
+**Status update (2026-05-19 ~15:30 EDT):** All seven findings have been addressed. F-4 (alternative-flows gap) and F-5-remainder (NF-* feature mapping) were closed in the afternoon push following F-1/F-2/F-3/F-5-partial/F-6. Re-ingest after the full pass shows 304 bookend nodes, 312 cross-doc relationships, zero ingest warnings.
+
+**Coverage now:**
+- Requirements exercised by at least one UC: **103 of 111 (93%)**. The 8 unexercised are documentation declarations (NF-041..044) and CI declarations (NF-050..053) that are not UC-shaped; they are properties of the build, explicitly covered by `FT-SI-16` in `docs/FEATURES.md`.
+- Requirements implemented by at least one feature: **111 of 111 (100%)**.
+- Features with at least one UC: **15 of 16**. The one without is `FT-SI-16` (project-wide quality bar) which is meta-infrastructure; documented as intentional.
+
+See "Resolution log" at the end for details on F-1 through F-6, and the new "F-4 resolution" section below for the alternative-flows pass.
 
 The SIG ingests seven bookend documents: `STORY.md`, `REQUIREMENTS.md`, `MODEL.md`, `docs/PIPELINE.md`, `docs/USE-CASES.md`, `docs/FEATURES.md`, `docs/OVERVIEW.md`. The findings below are everything the SIG noticed on its first build that warranted prose attention before SI v0.1 implementation begins.
 
@@ -103,7 +110,7 @@ That is 18 distinct kinds. Either the prose count is stale (we added one and did
 
 ---
 
-### 🟡 F-4: 62 requirements (57%) are not exercised by any use case
+### ✅ F-4: 62 requirements (57%) are not exercised by any use case [RESOLVED 2026-05-19 PM]
 
 **Severity:** Investigative — not necessarily a defect, but worth a deliberate pass.
 
@@ -124,6 +131,19 @@ That is 18 distinct kinds. Either the prose count is stale (we added one and did
 **Recommended action:** Plan an alternative-flows pass on USE-CASES.md. Each existing UC could grow a "What goes wrong" subsection that exercises the failure-mode REQs. Or new UCs could be added that target specific high-risk areas (concurrent operations, parser failure, ledger tampering, identity revocation mid-flight, role-scope evasion attempts).
 
 This is not a small lift — easily another 2-3 hours — but the SIG now gives us a precise checklist of which REQs are unprotected by UCs.
+
+**Resolution (2026-05-19 PM):** Six new alternative-flow use cases were added to `docs/USE-CASES.md` (UC-13 through UC-18), each ~150-250 lines, each exercising a coherent failure-mode narrative:
+
+- **UC-13**: A parser crashes mid-ingest, and operators recover. Exercises REQ-SI-013/014/015/024/026/034, NF-010/011/022.
+- **UC-14**: Two operators race to promote conflicting proposals. Exercises REQ-SI-025/032/033/034/035, NF-060/061/062/063.
+- **UC-15**: The project is exported, imported elsewhere, and reconciled. Exercises REQ-SI-043/044/054/055/056, NF-033.
+- **UC-16**: A Customer tries to URL-hack BB substrate state. Exercises REQ-SI-062/063/064/077, NF-020/023/024.
+- **UC-17**: The audit ledger is tampered with, and verify catches it. Exercises REQ-SI-081/082, NF-012/054.
+- **UC-18**: Project lifecycle through cold restart, status, teardown. Exercises REQ-SI-003/004/005/006/007/027/082, NF-030/031/032.
+
+UC-2, UC-3, and UC-10 were also extended with their full citation lists (the narrative already covered REQs that weren't in the `Requirements exercised` line).
+
+Result: unexercised count dropped from 62 of 108 to **8 of 111**. The remaining 8 are all NF-* documentation and CI declarations that have no operator-facing scenario; they are properties of the build, covered cross-cuttingly by `FT-SI-16`.
 
 ---
 
@@ -149,6 +169,25 @@ The Graph-backend block is the most surprising — REQ-SI-050 through 056 are fo
 **Recommended action:** Audit FEATURES.md matrix entries against REQUIREMENTS.md sections; ensure every functional REQ has at least one feature claiming it. The NF-* REQs are arguably handled by `FT-SI-16: Project-wide quality bar` and a (currently absent) "Cross-cutting" feature — could be addressed by adding NF coverage to existing features or declaring `FT-SI-16` to cover the entire NF-050 through NF-054 range explicitly.
 
 **Resolution (2026-05-19, partial):** Fixed the Graph-backend block (REQ-SI-050 to 056) by correcting the cross-wired FEATURES matrix entries described in F-1's resolution. Post-fix unimplemented count is 41 of 111 (was 49 of 108). The remaining 41 are mostly NF-* requirements and a few cross-cutting functional REQs (REQ-SI-007 port collision, REQ-SI-016 `si inputs`, REQ-SI-017/018 S3 ingestion specifics, REQ-SI-024 parser audit, REQ-SI-026 GraphLoader DSL validation, REQ-SI-035 concurrent BB operators). These remain unclaimed in the matrix and are deferred to a later housekeeping pass.
+
+**F-5 full resolution (2026-05-19 PM):** The FEATURES.md matrix was extended row-by-row to enumerate every previously-implicit requirement:
+
+- FT-SI-01 (lifecycle): added REQ-SI-007 (port collision)
+- FT-SI-02 (ingestion): added REQ-SI-016/017/018 (inputs query, S3 auth, S3 event-driven)
+- FT-SI-03 (parser registry): added REQ-SI-024 (audit), 026 (validation)
+- FT-SI-04 (BB substrate): added REQ-SI-035 (concurrency), NF-060..063 (consistency)
+- FT-SI-05 (GraphLoader): added REQ-SI-026 (validation)
+- FT-SI-07 (GraphReader): extended REQ range 100 to 106 (reports + output)
+- FT-SI-08 (SI/G): added NF-033 (export format stability)
+- FT-SI-09 (Window): added NF-002/003 (perf), NF-024 (Customer view scoping)
+- FT-SI-10 (Identity): added NF-020 (network I/O), NF-021 (secrets)
+- FT-SI-12 (audit): added NF-012 (verify-fail surfaces), NF-063 (total order)
+- FT-SI-15 (compose stack): added REQ-SI-007 + NF-010/011/022/023/030/031/032
+- FT-SI-16 (quality bar): added NF-001 (perf as declaration)
+
+Also fixed three ingest.ts regex bugs that were undercounting matrix coverage: NF-range expansion with bare 'NF-NNN to NF-NNN' shorthand, functional-range continuation with bare 'NNN to NNN' after a REQ-SI- prefix, and comma-separated bare numbers like 'REQ-SI-025, 026, 030'.
+
+Result: unimplemented count dropped from 41 of 111 to **0 of 111**. Every requirement now has at least one feature claiming it.
 
 ---
 
@@ -258,19 +297,19 @@ Re-running `npm run ingest` rebuilds the SIG fresh from the markdown. The SIG is
 
 ---
 
-## Resolution log (2026-05-19 ~14:30 EDT)
+## Resolution log
 
-Following the first-run report above, fixes were applied to the bookend documents and the SIG was re-ingested. Post-fix state:
+Following the first-run report above, fixes were applied across two passes on 2026-05-19. Final post-fix state:
 
-| Finding | Before | After | Status |
-|---------|--------|-------|--------|
-| F-1 (missing REQs) | 8 ingest warnings | 0 ingest warnings | RESOLVED |
-| F-2 ("eleven" vs 12) | mismatch | matches | RESOLVED |
-| F-3 (17 vs 18 blocks) | prose says 17, table 18 | both say 18 | RESOLVED |
-| F-4 (unexercised REQs) | 62 of 108 | 62 of 111 | DEFERRED — alternative-flows pass |
-| F-5 (unimplemented REQs) | 49 of 108 | 41 of 111 | PARTIAL — Graph block fixed; NF housekeeping deferred |
-| F-6 (FT-SI-16 no UC) | undocumented | documented as intentional | RESOLVED |
-| F-7 (clean fast ingest) | informational | still informational | n/a |
+| Finding | First-run | Mid-day | End-of-day | Final status |
+|---------|-----------|---------|------------|--------------|
+| F-1 (missing REQs) | 8 ingest warnings | 0 ingest warnings | 0 ingest warnings | RESOLVED |
+| F-2 ("eleven" vs 12) | mismatch | matches | matches | RESOLVED |
+| F-3 (17 vs 18 blocks) | prose says 17 | prose says 18 | prose says 18 | RESOLVED |
+| F-4 (unexercised REQs) | 62 of 108 | 62 of 111 | **8 of 111** (all NF docs/CI) | RESOLVED |
+| F-5 (unimplemented REQs) | 49 of 108 | 41 of 111 | **0 of 111** | RESOLVED |
+| F-6 (FT-SI-16 no UC) | undocumented | documented | documented | RESOLVED |
+| F-7 (clean fast ingest) | informational | informational | informational | n/a |
 
 Also surfaced (and resolved) during F-1's fix: the FEATURES.md matrix had **FT-SI-07, FT-SI-08, and FT-SI-09 cross-wired** — FT-SI-08 (SI/G) was mapped to Window REQs 060-064, FT-SI-09 (SI/W) to nonexistent 066-068, and FT-SI-07 (GraphReader) was mixing Reader and Graph REQs. All three were corrected to their natural REQ ranges. This was a hidden defect that only surfaced because F-1 forced an audit of the surrounding rows.
 

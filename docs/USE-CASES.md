@@ -2,11 +2,14 @@
 
 *Concrete scenarios that exercise the requirements in `REQUIREMENTS.md` against the data model in `MODEL.md`. Each use case names its actors, the situation, the need, what life looks like without SI, what life looks like with SI, and which requirements it exercises.*
 
-The use cases below cover four layers of Solution Intelligence:
+The use cases below cover five layers of Solution Intelligence:
 
 - **Lifecycle UCs** (UC-1 to UC-3) — instantiating, ingesting, and running a project
 - **Deliverable UCs** (UC-4 to UC-10) — producing the standard deliverable suite
 - **Multi-user / governance UCs** (UC-11, UC-12) — multi-operator collaboration and audit defensibility
+- **Alternative-flow UCs** (UC-13 to UC-18) — failure modes, concurrent-operator races, portability, security-scoped views, tamper detection, and full lifecycle teardown; each exercises requirements the happy-path UCs leave unexercised
+
+The alternative-flow group was added 2026-05-19 after the SI bookend SIG quantified the coverage gap (62 of 111 REQs unexercised by happy-path UCs). The six new UCs collectively close roughly two-thirds of that gap; the remaining unexercised REQs are mostly non-functional declarations about the build (documentation requirements, CI gates, packaging) that are not UC-shaped and are covered by `FT-SI-16` in `docs/FEATURES.md`.
 
 ---
 
@@ -88,7 +91,7 @@ The chainblocks ledger has recorded 9,481 `si.input.ingested` events plus 9,333 
 
 ### Requirements exercised
 
-REQ-SI-010, REQ-SI-011, REQ-SI-012, REQ-SI-020, REQ-SI-021, REQ-SI-025, REQ-SI-030, REQ-SI-031, REQ-SI-040, REQ-SI-041, REQ-SI-090, REQ-SI-091, REQ-SI-110, REQ-SI-111, REQ-SI-115. Plus MODEL.md §1.5 (epistemic classes), §2.4 (invariants), §8 (provenance).
+REQ-SI-010, REQ-SI-011, REQ-SI-012, REQ-SI-016, REQ-SI-017, REQ-SI-018, REQ-SI-020, REQ-SI-021, REQ-SI-022, REQ-SI-023, REQ-SI-025, REQ-SI-030, REQ-SI-031, REQ-SI-040, REQ-SI-041, REQ-SI-090, REQ-SI-091, REQ-SI-110, REQ-SI-111, REQ-SI-112, REQ-SI-113, REQ-SI-114, REQ-SI-115, REQ-SI-NF-001. Plus MODEL.md §1.5 (epistemic classes), §2.4 (invariants), §8 (provenance).
 
 ---
 
@@ -138,7 +141,7 @@ A Reviewer who joins the project two weeks later sees Maya's override and her no
 
 ### Requirements exercised
 
-REQ-SI-050 to REQ-SI-053 (analyst suite), REQ-SI-060 to REQ-SI-063 (Graph), REQ-SI-066 to REQ-SI-068 (Window), REQ-SI-074 (5-role matrix), REQ-SI-091 (audit events), REQ-SI-100 to REQ-SI-103 (reports). Plus MODEL.md §6.3.
+REQ-SI-040, REQ-SI-041, REQ-SI-042, REQ-SI-044, REQ-SI-045 (analyst suite, audit, chaining, override), REQ-SI-050, REQ-SI-051, REQ-SI-052, REQ-SI-053 (Graph backend), REQ-SI-060, REQ-SI-061, REQ-SI-066, REQ-SI-068 (Window), REQ-SI-074 (5-role matrix), REQ-SI-091 (audit events), REQ-SI-100, REQ-SI-101, REQ-SI-102, REQ-SI-103 (reports), REQ-SI-NF-002, REQ-SI-NF-003 (Window/Studio responsiveness). Plus MODEL.md §6.3.
 
 ---
 
@@ -330,7 +333,7 @@ The deliverable carries citations: every effort estimate traces to the `Inventor
 
 ### Requirements exercised
 
-REQ-SI-051, REQ-SI-052, REQ-SI-100, REQ-SI-101, REQ-SI-103. Plus MODEL.md §2.1 (analyst-output labels: Finding, RiskItem).
+REQ-SI-051, REQ-SI-052, REQ-SI-065 (Executive Briefing view), REQ-SI-100, REQ-SI-101, REQ-SI-103. Plus MODEL.md §2.1 (analyst-output labels: Finding, RiskItem).
 
 ---
 
@@ -413,17 +416,371 @@ REQ-SI-076, REQ-SI-090, REQ-SI-091, REQ-SI-092, REQ-SI-093, REQ-SI-NF-021 (audit
 
 ---
 
+## UC-13: A parser crashes mid-ingest, and operators recover
+
+### Actor & situation
+
+Maya is ingesting a 12,000-file legacy COBOL codebase into `aircraft-supply`. Ingestion has been running for forty minutes. The `cobol-treesitter` parser hits a file with a corrupt COPY directive and crashes — the process dies, partial output is left in the BB substrate, the rest of the batch is waiting.
+
+Maya does not want to lose forty minutes of work. She also does not want the partial output silently promoted into SI/G; the failed file might be referenced by others that did parse cleanly, and acting on incomplete graph state is exactly the dishonest kind of work the methodology refuses.
+
+### Need
+
+1. The crash must not abort the batch — the other 11,999 files keep ingesting.
+2. The crash must be visible — surfaced in the BB substrate and the Window, not buried in logs.
+3. The partial output must not promote to SI/G — GraphLoader rejects records from a failed parser run.
+4. The audit trail must record what happened — which parser, which input, what error, when, by whom.
+5. After Maya inspects the bad input and either fixes it or marks it as known-broken, the batch can be retried — only the failed file re-runs, not the 11,999 that already succeeded.
+
+### Without SI
+
+The ingest script dies. The forty minutes are lost; everything restarts from scratch. The broken file is rediscovered manually by running the parser by hand. No record exists of the failure other than a console log nobody reads.
+
+### With SI
+
+The Studio process supervises every parser invocation. When `cobol-treesitter` exits with a non-zero status on `legacy/payroll/MAINMODULE.cob`:
+
+```
+$ si ingest aircraft-supply --path ./customer-handoff/ --recursive
+... (39 minutes of progress) ...
+[parser cobol-treesitter] FAILED on legacy/payroll/MAINMODULE.cob
+  error class: ParseError
+  error message: unexpected token at line 482: COPY "INVAL\D"
+  partial DSL emitted: data/dsl/legacy_payroll_MAINMODULE.partial.sigdsl (rejected)
+  audit block: si.parser.failed @ seq 3,847 (actor: maya@example.com)
+... (continues with remaining 11,999 files) ...
+✓ Batch complete: 11,999 / 12,000 files ingested. 1 parser failure.
+⚠ BB substrate has 1 failed ingest pending operator review.
+```
+
+Maya inspects the BB queue. The failed input is there with full context: the parser command line, the stderr tail, the line number, the partial DSL output (marked `rejected`, not promoted). The chainblocks ledger has a `si.parser.failed` block with the actor's identity, the input hash, the error class, and the error message — but not the input file contents (per the security rule, NF-022).
+
+Maya fixes the broken `COPY` directive in the customer's handoff (or marks the file as known-broken with tribal knowledge) and runs `si ingest aircraft-supply --path ./customer-handoff/legacy/payroll/MAINMODULE.cob --resume`. Studio recognizes the input by hash, retries only that file, and — because the file content is now different — incrementally re-parses it. The other 11,999 ingested files are untouched; their `input_artifact` nodes carry the same `blob_sha256` as before.
+
+The Studio process itself can crash too. If it does, BB substrate state survives — it is checkpointed to disk per REQ-SI-034 and NF-011. On `si up`, Studio resumes from substrate state; in-flight parser invocations that did not complete before the crash are marked failed and surfaced in the BB queue for operator review. Promoted SI/G content is preserved independently; loss of BB state does not lose promoted graph content.
+
+### Requirements exercised
+
+REQ-SI-013, REQ-SI-014, REQ-SI-015, REQ-SI-024, REQ-SI-026, REQ-SI-034, REQ-SI-NF-010, REQ-SI-NF-011, REQ-SI-NF-022.
+
+---
+
+## UC-14: Two operators race to promote conflicting proposals
+
+### Actor & situation
+
+Maya and Sam are both Operators on `dla-stores`. The IntentVsReality analyst has surfaced a finding both noticed at the same time: a function `OrderProcessor.dispatch` either drifts from its documented intent or does not. Maya thinks the drift is real and clicks "promote drift edge" in Studio's UI. Sam, working in parallel, has investigated the runtime evidence and thinks the intent is the one that should be updated (the code is right; the design doc is out of date). Sam clicks "promote intent update."
+
+Both actions arrive at GraphLoader within the same second. They are not just edits to two different nodes; they are *contradictory* claims about the same intent↔implementation edge.
+
+### Need
+
+1. Neither action silently overwrites the other.
+2. The audit trail preserves the full order of attempts — not just the winner.
+3. The losing action's actor (or both) gets a clear surface-level signal: *your action conflicts with one just made by Sam; review and decide.*
+4. The conflict gets a `ba.bb.conflict.surfaced` event so it does not vanish into a log.
+5. Eventually consistent: once one resolution is committed, both Maya's and Sam's Window views converge to the same state within the latency budget (REQ-SI-068).
+
+### Without SI
+
+Last-writer-wins. Maya's commit lands, Sam's commit overwrites it, no record of Maya's attempt survives. Three weeks later when an auditor asks "why did this drift edge disappear?" there is no answer.
+
+### With SI
+
+GraphLoader is the single writer to SI/G (REQ-SI-025), and its write queue is strictly serialized (NF-061). Maya's proposal arrives first by 47ms and is promoted; the BB substrate records `si.bb.proposal.promoted` @ seq 4,521 (actor: maya@example.com). Sam's proposal arrives 47ms later and, because it modifies the same conceptual edge, GraphLoader detects the conflict, rejects the second promotion, and emits `si.bb.conflict.surfaced` @ seq 4,522 with `between: [maya's-promotion, sam's-proposal]`, `actor: sam@example.com`.
+
+Sam's Window updates within the latency budget. He sees: *"Your proposal conflicts with maya@example.com's promotion 47ms earlier. Review the conflict before proceeding."* Clicking through, he sees Maya's promoted drift edge, his rejected intent-update, and the underlying graph context: the `cs_2026.function`, the `ba.process` it implements, the `intended_behavior` they disagree about.
+
+Sam and Maya talk. They agree the intent should be updated to match the code (Sam was right; Maya's drift edge is real but the right resolution is to *correct the intent*, not just mark the drift). Maya, holding Operator role, navigates to the conflict and selects `resolution: drifts-from-and-update-intent`. GraphLoader applies the resolution as a single atomic operation: the `DRIFTS_FROM` edge from Maya's promotion is replaced with an `INTENDS_TO_IMPLEMENT` edge bound to a new intended-behavior node sourced from Sam's runtime evidence. Audit: `si.bb.conflict.resolved` @ seq 4,531 (actor: maya@example.com, resolution-text references both prior blocks).
+
+Three months later when a Reviewer queries the audit ledger for this function, the full sequence is visible — Maya's first promotion, Sam's conflicting attempt, the conversation (resolved-with-notes), and the final state. The audit trail is the negotiated history, not just the winning state.
+
+Concurrent ingestion of overlapping inputs (NF-062): if Maya and Sam both drop the same file into the input bucket from different sessions, Studio detects the duplicate via `blob_sha256` match (REQ-SI-014) and ingests it only once; both operators see the same `input_artifact` node and neither sees a phantom duplicate.
+
+### Requirements exercised
+
+REQ-SI-025, REQ-SI-032, REQ-SI-033, REQ-SI-034, REQ-SI-035, REQ-SI-NF-060, REQ-SI-NF-061, REQ-SI-NF-062, REQ-SI-NF-063.
+
+---
+
+## UC-15: The project is exported, imported into a fresh installation, and reconciled
+
+### Actor & situation
+
+The `dla-stores` engagement is done. The customer wants to bring the work in-house, on their own infrastructure. Three months later, the customer's team — working on a fresh SI installation — wants to continue cultivating the SIG with new runtime evidence and a revised constraint set.
+
+Meanwhile, Credence has continued cultivating the original project's SIG as new audit observations have come in. The two graphs have diverged. They need to be reconciled.
+
+### Need
+
+1. The original project exports to a portable bundle (graph + DSL streams + audit ledger archive + schema manifest).
+2. The customer's fresh SI installation imports the bundle into a new project.
+3. Both copies can be extended independently after the import.
+4. When the two need to be reconciled, the merge surfaces conflicts (not silent winners) and produces a reconciled SI/G whose audit trail preserves both branches.
+
+### Without SI
+
+Whatever was in the customer's deliverable .zip is what they have. Three months later they cannot extend the model; they have a report, not a graph. The cost of re-doing the modernization analysis falls on them; the model accumulates no further.
+
+### With SI
+
+```
+# At Credence, at engagement close:
+$ si export-graph dla-stores --to s3://customer-handoff/dla-stores-export-2026-08-15/
+✓ Exported 47,832 nodes + 124,917 edges + 9,333 DSL files + audit ledger archive
+✓ Schema manifest declared:
+    si_schema_version: 0.1.0
+    domain_namespaces:   ["ba"]
+    paradigm_namespaces: ["cs_2026"]
+✓ chainblocks ledger: seq range [1, 18,402], all verified intact
+✓ Bundle SHA-256: 7f3a91...
+✓ si.export.created @ seq 18,403
+
+# Three months later, at the customer:
+$ si init dla-stores-customer --template csharp-to-servicenow
+$ si import-graph dla-stores-customer --from s3://customer-handoff/dla-stores-export-2026-08-15/
+✓ Schema compatibility check: si_schema_version 0.1.0 → 0.1.3 (forward-compatible)
+✓ Imported 47,832 nodes + 124,917 edges + audit ledger archive
+✓ si.import.applied @ seq 18,404 (actor: customer-lead@agency.gov, merge_policy: replace)
+```
+
+The schema manifest carries the domain (`ba`) and paradigm (`cs_2026`) namespaces; the importing SI installation, even if it has been updated to 0.1.3, recognizes 0.1.0 as forward-compatible and imports without breaking (NF-033). New labels added in 0.1.3 simply do not appear in the imported nodes; consumers reading the older stream against newer SI must ignore unknown labels without erroring (MODEL.md §7.1).
+
+Three months pass at both sites. Credence has added 412 new audit `evidence` nodes from production logs. The customer has added 89 new `constraint` nodes from a new FedRAMP control set and updated 14 of the `ba.business_rule` nodes. They want to merge.
+
+```
+# Customer pulls Credence's branch:
+$ si import-graph dla-stores-customer \
+    --from s3://credence-bucket/dla-stores-evidence-2026-11-15/ \
+    --merge-policy merge
+✓ Schema compatibility check: OK
+⚠ Merge conflict surfaced: 3 nodes modified in both branches
+  - ba.business_rule "BR-OrderApproval-threshold" — customer set value=10000, credence set value=15000
+  - intended_behavior "intake-claim-eligibility" — description updated in both
+  - constraint "FAR-13.106-1(c)" — text revised in both
+✓ 412 non-conflicting nodes merged.
+✓ si.import.applied @ seq 21,847 (actor: customer-lead@agency.gov, merge_policy: merge, conflict_count: 3)
+⚠ 3 conflicts await operator resolution in BB substrate.
+```
+
+The customer's Operator resolves the three conflicts — keeping their own threshold for the business rule, taking Credence's revised intent, and producing a merged constraint text that incorporates both wordings. Each resolution produces a `si.bb.conflict.resolved` event with the actor and the rationale. The audit ledger now preserves *both branches' histories* plus the merge decisions: an Inspector General three years from now can see Credence's evidence, the customer's constraints, and the negotiated reconciliation, all attributable to named operators.
+
+The analysts are idempotent (REQ-SI-043): re-running ConstraintCoverage against the merged graph against an unchanged subgraph produces an identical set of findings. The only new findings are those genuinely caused by the merged content.
+
+### Requirements exercised
+
+REQ-SI-043, REQ-SI-044, REQ-SI-054, REQ-SI-055, REQ-SI-056, REQ-SI-NF-033.
+
+---
+
+## UC-16: A Customer-role viewer tries to URL-hack BB substrate state
+
+### Actor & situation
+
+The customer engagement has been delivered. A senior leader at the customer site — holding `Customer` role on `dla-stores-customer` — is reading the delivered Intent-vs-Reality Map in Window. He notices that some findings appear to reference "BB substrate state" that the curated Customer view does not show. Curious (and modestly technically literate), he tries:
+
+- Editing the Window URL from `/projects/dla-stores-customer/view/intent-vs-reality` to `/projects/dla-stores-customer/view/bb-substrate`
+- Inspecting the page's network calls and re-issuing one of them with a path swapped to `/api/v1/bb/proposals`
+- Setting up a direct `curl` against `https://window.customer.gov/api/v1/projects/dla-stores-customer/bb/conflicts` with his session token
+
+None of this is malicious; he is curious about what was filtered out of his view. But the methodology has to refuse all three attempts cleanly, log the attempts, and surface them.
+
+### Need
+
+1. Role scoping is enforced at the API boundary, not just hidden in the UI. The URL hack returns `403`, not the BB state.
+2. The token is verified for both authentication ("is this a valid session?") and authorization ("does this user hold a role that permits this view?") on every request.
+3. The denial is logged with enough detail to debug *and* without leaking secrets or session tokens.
+4. The denial is audit-recorded — not as a chainblocks block (those are project-state events; this is a request-level audit), but in the per-component access log such that an Operator reviewing audit can see "customer-leader@agency.gov was denied access to bb.conflicts on Friday at 14:32 — he was holding Customer role on this project."
+5. The Customer view itself does not leak any of the filtered material in headers, metadata, error messages, or response payloads.
+
+### Without SI
+
+The URL hack succeeds; the leader sees the BB substrate with all the operator overrides and rejected findings. He has a quiet crisis of confidence about the work and his trust in the deliverable evaporates.
+
+### With SI
+
+Every API request to SI/W (and SI/S) carries a token. The request handler resolves the token through SI/I, which returns `{ user_id, effective_roles_on_project }`. The handler then checks the route's required role against `effective_roles_on_project`:
+
+```
+GET /api/v1/projects/dla-stores-customer/bb/conflicts
+  Authorization: Bearer <opaque-token>
+  -> SI/I.resolve(token, project="dla-stores-customer")
+     -> { user_id: "customer-leader@agency.gov",
+          effective_roles: ["Customer"] }
+  -> route requires role in [Owner, Operator, Analyst, Reviewer]
+  -> 403 Forbidden
+     {
+       "error": "insufficient_role",
+       "required": ["Owner", "Operator", "Analyst", "Reviewer"],
+       "held": ["Customer"]
+     }
+```
+
+The response does not include the BB state under any header, no "hint" of what would be returned to a higher-role user, and the error message does not leak session-token state. The access log (per NF-022, no input file content; per NF-077 standards for auth-failure logging) records: `2026-11-15T14:32:11Z denied=customer-leader@agency.gov route=GET /api/v1/projects/dla-stores-customer/bb/conflicts required-role=Operator-or-above held-role=Customer`.
+
+The Customer view itself is constructed by GraphReader to *exclude* by construction — it cannot leak BB state because BB state is not in the query that produces it (NF-024). Even if the Window front-end were misconfigured to display all returned fields, there are no BB-state fields in the response payload.
+
+The network-call re-issue gets the same `403`. The direct `curl` gets the same `403`. The leader contacts the project's Owner: "I noticed there is BB substrate state I can't see; what is it?" The Owner explains that BB state is the operators' workshop — proposed-but-not-promoted findings, conflicts the operators are deliberating about — and is intentionally excluded from the Customer view because curated deliverables are the contract, not the raw workshop. The leader's trust in the deliverable is *strengthened*: the methodology refuses to leak by accident.
+
+### Requirements exercised
+
+REQ-SI-062, REQ-SI-063, REQ-SI-064, REQ-SI-077 (auth/authz logging detail), REQ-SI-NF-020 (no unexpected network I/O), REQ-SI-NF-023 (per-project isolation enforced at container layer), REQ-SI-NF-024 (Customer views must not leak BB state).
+
+---
+
+## UC-17: The audit ledger is tampered with, and verify catches it
+
+### Actor & situation
+
+Three years after delivery, the agency hosting `dla-stores-customer` is undergoing a system audit. An assessor wants to know: is the audit trail intact, or has it been tampered with since the engagement closed? She also has reason to suspect that a specific block — the override of a particular drift finding — may have been altered to soften the finding.
+
+Meanwhile, on the operations side, SRE has been doing routine maintenance on the chainblocks ledger storage. A misconfigured deduplication tool has "compressed" some old ledger blocks by recomputing what it thought were their hashes. The result, from the verifier's perspective, is corruption — even though no human intended to tamper.
+
+### Need
+
+1. `si verify <project>` must distinguish between intact, tampered, and operationally-broken ledger states.
+2. The verification exit code must be machine-parseable for CI integration.
+3. A failed verify must be surfaced as a critical health issue in `si status` — not just buried in a log.
+4. The verification result itself must be timestamped and (if the assessor requests it) signed.
+
+### Without SI
+
+The assessor has to manually inspect the ledger; tampering is invisible because there is no cryptographic chain. The SRE accident is undetectable until much later when someone notices missing data. Trust in the audit trail decays slowly until the deliverable is reduced to "trust us, this is what we found."
+
+### With SI
+
+The assessor runs the verify command:
+
+```
+$ si verify dla-stores-customer
+[verify] chainblocks-verify projects/dla-stores-customer/audit.ledger
+[verify] Walking ledger: 18,402 blocks ... ✖
+[verify] FAIL: block #14,891 hash mismatch at byte offset 4,238,712
+        expected: a2f7c9...
+        actual:   8e1b04...
+        chain broken; subsequent blocks (14,892..18,402) cannot be trusted
+[verify] Exit code: 1 (TAMPERED)
+```
+
+Exit code 1 means tampered (per REQ-SI-081). Exit code 0 would mean clean. Exit code 2 would mean operational error (couldn't read the ledger file, e.g.). The assessor sees that block 14,891 — the exact override block she was suspicious about — has been altered. She has cryptographic proof, not just a hunch.
+
+The `si status` view shows the broken state prominently (NF-012):
+
+```
+$ si status dla-stores-customer
+Project:      dla-stores-customer
+Containers:   4/4 running
+Graph nodes:  47,832
+Graph edges:  124,917
+Audit ledger: ⚠ 18,402 entries; chainblocks-verify FAILED at block #14,891 (TAMPERED).
+BB conflicts: 0 open
+```
+
+The assessor escalates. SRE investigates, discovers the deduplication misconfiguration, and pulls a backup from the day before the maintenance. They restore the ledger and re-run verify:
+
+```
+$ si verify dla-stores-customer
+[verify] chainblocks-verify projects/dla-stores-customer/audit.ledger
+[verify] Walking ledger: 18,402 blocks ... ✓
+[verify] PASS: chain intact, no tampering detected.
+[verify] Exit code: 0 (CLEAN)
+[verify] Result block written: si.verify.completed @ seq 18,403 (actor: sre@agency.gov)
+```
+
+The assessor accepts the restored ledger. The verify command is also exercised in CI on every commit to main (NF-054): the SI installation runs its own SIG against its own bookend documents nightly, and one of the steps is `si verify` against the test fixtures' ledgers. A regression in chainblocks would surface as a CI red within hours.
+
+### Requirements exercised
+
+REQ-SI-081, REQ-SI-082, REQ-SI-NF-012, REQ-SI-NF-054.
+
+---
+
+## UC-18: The project lifecycle through cold restart, status checks, and clean teardown
+
+### Actor & situation
+
+The `dla-stores` engagement concluded six months ago. The Credence team has been keeping the project running for follow-on work, but the contract option is not being exercised; it is time to retire the project. Meanwhile, three new SI projects (`piee-cor`, `eden-township`, `va-leads-pilot`) are starting up on the same Docker host this week.
+
+### Need
+
+1. `si up` brings a previously-stopped project back online cleanly, with all four services healthy.
+2. `si status` returns honest health on each service and the audit ledger.
+3. `si down` stops without data loss; restarting resumes from where things stopped.
+4. `si destroy` removes a project completely — containers, volumes, network — *but archives the audit ledger* to a configurable location so future audits remain possible.
+5. Multiple projects on the same host do not collide — ports are allocated cleanly per project, networks are isolated, and one project's lifecycle action does not affect the others.
+
+### Without SI
+
+Manual `docker compose` against bespoke YAML, with operator-maintained port assignments in a wiki page that drifts from reality. "Destroy" is `rm -rf`, which destroys the audit ledger along with everything else, which means the engagement's history is unrecoverable.
+
+### With SI
+
+```
+# Bring the dormant project back online for a final retrospective:
+$ si up dla-stores
+✓ Resolved port allocations from ~/.si/ports.json
+  studio=30001 window=30002 identity=30003 graph=30004
+✓ Docker compose stack 'si-dla-stores' starting...
+✓ identity: healthy (bangauth)
+✓ graph: healthy (PolyGraph, 47,832 nodes)
+✓ studio: healthy (BB substrate resumed from disk, 0 conflicts pending)
+✓ window: healthy
+✓ chainblocks-verify projects/dla-stores/audit.ledger: PASS (seq 1..18,402)
+
+$ si status dla-stores
+Project:      dla-stores
+Containers:   4/4 running
+Graph nodes:  47,832
+Graph edges:  124,917
+Audit ledger: ✓ 18,402 entries; chainblocks-verify PASS.
+BB conflicts: 0 open
+Uptime:       3 minutes
+```
+
+At the same time, Sam is starting up `piee-cor`. Port allocation requests the next three free ports from `~/.si/ports.json` (30005, 30006, 30007). The compose stack uses network `si-piee-cor`, separate from `si-dla-stores`. Sam's project does not see `dla-stores` and vice-versa — strict isolation at the Docker network layer (REQ-SI-006, NF-023).
+
+The team finishes the retrospective, archives the deliverables, and decides to retire `dla-stores`:
+
+```
+$ si destroy dla-stores --archive-ledger-to s3://credence-archives/dla-stores-2026-09-30/
+⚠ This will tear down containers, remove volumes, release ports, and archive the audit ledger.
+  Confirm with: si destroy dla-stores --confirm
+
+$ si destroy dla-stores --confirm --archive-ledger-to s3://credence-archives/dla-stores-2026-09-30/
+✓ Audit ledger archived: s3://credence-archives/dla-stores-2026-09-30/audit.ledger.tar.gz (18,402 blocks)
+✓ Audit ledger SHA-256 manifest: s3://credence-archives/dla-stores-2026-09-30/audit.manifest.json
+✓ chainblocks final block written: si.project.destroyed @ seq 18,403 (actor: maya@example.com)
+✓ Containers stopped and removed (4)
+✓ Volumes removed (4)
+✓ Docker network 'si-dla-stores' removed
+✓ Ports released from ~/.si/ports.json: 30001, 30002, 30003, 30004
+✓ Project 'dla-stores' destroyed.
+```
+
+Four years later, an Inspector General investigating an unrelated agency matter wants to inspect the `dla-stores` audit trail. The archived ledger is pulled from S3, mounted into a fresh `si verify` invocation, and confirmed intact. The engagement's history outlived the engagement, the project, the team, and several rounds of infrastructure churn. The methodology that produced it kept its promise.
+
+Meanwhile, `piee-cor`, `eden-township`, and `va-leads-pilot` continue on the same Docker host, each in its own isolated stack. The host accommodates many SI projects side by side; the framework's job is to keep them from colliding (REQ-SI-007) and to let each one age out cleanly on its own schedule (REQ-SI-003 through REQ-SI-005).
+
+### Requirements exercised
+
+REQ-SI-003, REQ-SI-004, REQ-SI-005, REQ-SI-006, REQ-SI-007, REQ-SI-027, REQ-SI-082, REQ-SI-NF-030, REQ-SI-NF-031, REQ-SI-NF-032.
+
+---
+
 ## Coverage summary
 
-The 12 use cases above collectively exercise every numbered functional requirement in `REQUIREMENTS.md` at least once, and most exercise several. Non-functional requirements appear in UC-2 (performance budget), UC-3 (Studio responsiveness), UC-11 (multi-user semantics), and UC-12 (audit integrity over time).
+The 18 use cases above collectively exercise the bulk of the functional requirements in `REQUIREMENTS.md` and a substantial portion of the non-functional ones. The SI bookend SIG quantifies the coverage at every commit; see `sig/FINDINGS.md` for the current state.
 
-| Layer | UCs |
-|-------|-----|
-| Lifecycle | UC-1, UC-2, UC-3 |
-| Deliverable suite | UC-4 (Inventory), UC-5 (Dependency Atlas), UC-6 (Intent-vs-Reality), UC-7 (Constraint Coverage), UC-8 (Risk Surface), UC-9 (Tribal Knowledge), UC-10 (Modernization Roadmap) |
-| Governance & multi-user | UC-11 (collaboration), UC-12 (auditor verification) |
+| Layer | UCs | Focus |
+|-------|-----|-------|
+| Lifecycle | UC-1, UC-2, UC-3 | Instantiation, ingestion, analyst chain |
+| Deliverable suite | UC-4 through UC-10 | Each of the seven primary deliverables |
+| Governance & multi-user | UC-11, UC-12 | Collaboration; long-horizon audit |
+| Alternative flows | UC-13 through UC-18 | Failure modes, concurrency races, portability, security scoping, tamper detection, lifecycle teardown |
 
-The remaining standard deliverables — **Pattern Classification**, **Executive Briefing**, **MCP/HTTP API endpoint**, and **Audit Trail** — are exercised implicitly by UC-7 (pattern matching as part of constraint coverage), UC-10 (synthesis as a meta-deliverable), and UC-12 (the audit trail IS the deliverable being verified). A future iteration may add dedicated UCs for each as the framework matures.
+The remaining standard deliverables — **Pattern Classification**, **Executive Briefing**, **MCP/HTTP API endpoint**, and **Audit Trail** — are exercised implicitly by UC-7 (pattern matching as part of constraint coverage), UC-10 (synthesis as a meta-deliverable), UC-12 (audit verification), and UC-17 (tamper detection). A future iteration may add dedicated UCs for each as the framework matures.
+
+**Non-functional coverage.** Performance budgets (NF-001..003), reliability (NF-010..012), security (NF-020/022/023/024), compatibility (NF-030..033), concurrency (NF-060..063), and quality gates (NF-054) all have at least one UC that exercises them. The remaining non-functional REQs are documentation declarations (NF-040..044), CI configuration (NF-050..053), and audit-ledger total ordering (NF-063) that are not UC-shaped — they are properties of the build, not scenarios in the field — and are covered as cross-cutting concerns by `FT-SI-16` in `docs/FEATURES.md`.
 
 ---
 

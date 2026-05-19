@@ -607,14 +607,47 @@ async function main() {
         const featureId = m[1];
         const reqText = m[2];
         const ucText = m[3];
+        // Direct matches (REQ-SI-NNN or REQ-SI-NF-NNN)
         const reqIds = Array.from(reqText.matchAll(/REQ-SI-(?:NF-)?\d+/g)).map(x => x[0]);
-        const rangeMatches = Array.from(reqText.matchAll(/REQ-SI-(\d+)\s+to\s+(\d+)/g));
-        for (const rm of rangeMatches) {
+        // Comma-separated functional shorthand: 'REQ-SI-NNN, NNN' (bare 3-digit number after a comma in a cell that mentions REQ-SI-)
+        const hasFnPrefix = /REQ-SI-\d+/.test(reqText);
+        if (hasFnPrefix) {
+          const fnShorthand = Array.from(reqText.matchAll(/,\s*(\d{3})(?!\s*to)\b/g));
+          for (const m of fnShorthand) {
+            reqIds.push(`REQ-SI-${m[1]}`);
+          }
+        }
+        // Functional ranges. Pattern 1: 'REQ-SI-NNN to (REQ-SI-)NNN' (full prefix).
+        const fnRanges1 = Array.from(reqText.matchAll(/REQ-SI-(\d+)\s+to\s+(?:REQ-SI-)?(\d+)\b/g));
+        // Pattern 2: 'REQ-SI-NNN, NNN to NNN' (shorthand following a full reference)
+        // Captured as bare 'NNN to NNN' appearing after at least one REQ-SI-NNN earlier in the same cell.
+        const hasFnContext = /REQ-SI-\d+/.test(reqText);
+        const fnRanges2 = hasFnContext
+          ? Array.from(reqText.matchAll(/(?<![\w-])(\d{3})\s+to\s+(\d{3})\b/g))
+          : [];
+        for (const rm of [...fnRanges1, ...fnRanges2]) {
           const a = parseInt(rm[1], 10);
           const b = parseInt(rm[2], 10);
           for (let n = a; n <= b; n++) {
             reqIds.push(`REQ-SI-${String(n).padStart(3, '0')}`);
           }
+        }
+        // Non-functional ranges. Accepts forms:
+        //   'REQ-SI-NF-NNN to REQ-SI-NF-NNN'
+        //   'REQ-SI-NF-NNN to NF-NNN'
+        //   'NF-NNN to NF-NNN'
+        const nfRanges = Array.from(reqText.matchAll(/(?:REQ-SI-)?NF-(\d+)\s+to\s+(?:REQ-SI-)?NF-(\d+)/g));
+        for (const rm of nfRanges) {
+          const a = parseInt(rm[1], 10);
+          const b = parseInt(rm[2], 10);
+          for (let n = a; n <= b; n++) {
+            reqIds.push(`REQ-SI-NF-${String(n).padStart(3, '0')}`);
+          }
+        }
+        // NF-NNN shorthand (without REQ-SI- prefix, in matrix cells where prefix is implied)
+        const nfShorthand = Array.from(reqText.matchAll(/(?<!\w)NF-(\d+)(?!\d)/g));
+        for (const rm of nfShorthand) {
+          reqIds.push(`REQ-SI-NF-${String(parseInt(rm[1], 10)).padStart(3, '0')}`);
         }
         const ucIds = Array.from(ucText.matchAll(/UC-\d+/g)).map(x => x[0]);
         for (const rId of new Set(reqIds)) {
