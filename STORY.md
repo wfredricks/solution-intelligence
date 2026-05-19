@@ -72,7 +72,25 @@ The model is the asset. The artifacts are how the model gets used. Cultivation i
 
 ---
 
-## V — The doctrine as resolved negotiation
+## V — Why this is possible now, and was not possible before
+
+There is a claim hiding inside the kernel that deserves to be drawn out, because it is the claim that distinguishes Solution Intelligence from every prior attempt at this kind of work.
+
+**A Solution Intelligence Graph is substrate-independent.** It describes the *solution*, not the *implementation*. The procurement function an agency operates is a solution; the COBOL transaction system it ran on in 1985 was one implementation; the Java enterprise stack it ran on in 2005 was another; the microservices and ServiceNow workflows of today are the current one; whatever lands in the 2040s will be the next. Across all of those substrates, the solution itself — what gets tracked, what gets approved, what gets audited, what obligations bind, what evidence accumulates, what tribal knowledge the operators carry — has stayed remarkably stable. The implementations turn over every fifteen or twenty years. The solution mostly does not.
+
+A SIG built honestly captures the solution at the level where it is stable. The ground-truth nodes — the ones derived from today's source code — will age out as the substrate turns over. The constraint nodes, the evidence nodes, the tribal-knowledge nodes, the reference-pattern nodes, the aspirational-intent nodes will not. They describe the solution. As each new implementation lands, the SIG absorbs it as a new layer of ground truth bound by `INTENDS_TO_IMPLEMENT` and `DRIFTS_FROM` edges to the stable spine. The model does not get rebuilt. The model gets *cultivated forward* across the paradigm shift.
+
+This kind of artifact has been valuable for a long time. Organizations have been recreating partial, local versions of it for decades — in architecture binders that decayed in filing cabinets, in requirements traces nobody could query, in compliance matrices maintained by hand in spreadsheets, in the gray-haired engineer's institutional memory that retired with him. The need has been there since computing began handling complex obligations. The supply has not.
+
+What makes a real SIG newly possible *now* is that today's technologies — graph databases, hash-chained ledgers for tamper-evident audit, portable serialization formats that survive infrastructure changes, AI-assisted ingestion at the scale heterogeneous customer artifacts actually arrive in, cheap storage that lasts decades, distribution mechanisms like git that outlive the organizations that adopted them — let us **capture a SIG as a neat bundle of bits and bytes**. A graph export. A DSL stream. An audit ledger. A signed manifest. The whole cultivated artifact, portable enough to clone, archive, hand off, and query decades later without depending on the people or the tooling that produced it. The methodology has been waiting for the substrate to catch up. Now it has.
+
+Imagine if the COBOL transaction systems built in the 1970s had been accompanied by SIGs — not architecture binders, but queryable, attributable, portable graph artifacts of the actual solution. The Java migrations of the early 2000s would have started with the SIG rather than with archeology against the running code. The ServiceNow migrations of today would not be expensive rediscovery missions. The cost of every paradigm transition in software has been dominated by the cost of *re-learning what the system was supposed to do.* A cultivated SIG eliminates that cost, or at least collapses it to something much smaller than it has historically been. We have not had this before because the substrate to capture it did not exist. We have it now.
+
+The practical horizon Solution Intelligence is built for is not five years. It is two or three turnovers of the implementation substrate — a SIG built well today should still be useful in the 2050s, and the paradigm that hosts the solution then will not be a paradigm we can name from here. That is the design center. Everything in the doctrine that follows is in service of it.
+
+---
+
+## VI — The doctrine as resolved negotiation
 
 The doctrine that emerges from this is not a list of commitments asserted from above. It is the **negotiated treaty** between the practitioner's worry — that productizing will hollow out the practice — and the methodology's claim — that some disciplines must be set down or be lost when AI scales the work. Read each of the commitments below in that register. Every one of them is the resolution of an argument that was had honestly before the commitment was made.
 
@@ -102,7 +120,7 @@ That is the doctrine. Eleven commitments, each one a treaty between artisan and 
 
 ---
 
-## VI — One engagement, in motion
+## VII — One engagement, in motion
 
 What does this look like when an engagement actually happens?
 
@@ -120,7 +138,7 @@ She gives up some artistry. She does not give up the practice. What she gains is
 
 ---
 
-## VII — Success, and what we will not be
+## VIII — Success, and what we will not be
 
 A small honesty section, because aspirational documents owe their reader honesty.
 
@@ -136,15 +154,15 @@ And the methodology refuses certain things explicitly. It is not a SaaS. It is n
 
 ---
 
-## VIII — The legacy
+## IX — The legacy
 
 We are taking the initial strides. They are strides, not the destination. **Solution Intelligence is the methodology this generation needs, designed honestly enough to be transcended by the next.**
 
-We are not building the final tool. We are not pretending this is the last word on AI-era systems analysis, or even on graph-shaped solution intelligence. We are establishing the practice from which the future evolutions will inherit their discipline. The provenance. The attribution. The epistemic honesty. The cultivation. The treatment of the model as an artifact-of-record rather than a one-time deliverable. The insistence that every action ends at a named person.
+We are not building the final tool. We are not pretending this is the last word on AI-era systems analysis, or even on graph-shaped solution intelligence. We are establishing the practice from which the future evolutions will inherit their discipline. The provenance. The attribution. The epistemic honesty. The cultivation. The treatment of the model as an artifact-of-record that *outlives the paradigm that hosted its first implementation*. The insistence that every action ends at a named person.
 
-These are the inheritances. Whatever supersedes Solution Intelligence — and something will, eventually, because methodologies have lifespans — will discard whatever specific components we built (the Studio, the Window, the particular shape of the pipeline) and find better ones. That is the right outcome. The methodology was never the point. The discipline was the point.
+These are the inheritances. Whatever supersedes Solution Intelligence — and something will, eventually, because methodologies have lifespans — will discard whatever specific components we built (the Studio, the Window, the particular shape of the pipeline) and find better ones. That is the right outcome. The methodology was never the point. The discipline was the point. And the SIGs that are cultivated under this discipline will survive their tooling, because that is what they were designed to do from the day they were named.
 
-The most we can do is leave the practice in a shape the next generation can inherit. That is what we are doing. That is what this document is for. **Solution Intelligence is the kernel of truth from which the future evolutions will flow** — for as long as the kernel is honest enough to be worth flowing from.
+The most we can do is leave the practice in a shape the next generation can inherit, and leave the artifacts in a shape that the generation after that can still read. That is what we are doing. That is what this document is for. **Solution Intelligence is the kernel of truth from which the future evolutions will flow** — for as long as the kernel is honest enough to be worth flowing from.
 
 🖇️
 
