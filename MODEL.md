@@ -162,141 +162,228 @@ SI/G is the durable, queryable artifact of a Solution Intelligence project. It i
 
 ### 2.1 — Node labels (v0.1 set)
 
-Nodes are grouped by epistemic category. Every node carries the common props in §2.3 plus per-label props.
+Labels are organized in three tiers per STORY §V (substrate-independence) and the doctrinal commitment in STORY §VI. Every node carries the common props in §2.3 plus per-label props.
+
+**Naming convention.** Tier-1 labels are bare lowercase, with `snake_case` for multi-word names (e.g. `constraint`, `intended_behavior`). Tier-2 labels are `<domain>.<label>` (e.g. `ba.form`, `ba.business_rule`). Tier-3 labels are `cs_<era>.<label>` (e.g. `cs_2026.function`, `cs_2026.source_file`). All names are case-sensitive; lowercase-only is the rule to avoid case-mismatch errors across backends.
+
+#### Tier 1 — Solution-universal vocabulary (timeless)
+
+Applies to any kind of solution in any era. Adding a Tier-1 label is a major event (see §7).
 
 **Input-side**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `InputArtifact` | A single ingested input (file, document, S3 object) | `path`, `mimeType`, `blobSha256`, `bytes`, `inputClass` |
-
-**Ground-truth (code-side)**
-
-| Label | Description | Required props |
-|-------|-------------|----------------|
-| `SourceFile` | A single source file | `path`, `language`, `blobSha256` |
-| `Function` | A function/method/procedure | `name`, `arity`, `language` |
-| `Class` | A class/type/struct/record | `name`, `language` |
-| `Interface` | An interface/protocol/trait | `name`, `language` |
-| `Variable` | A module-scoped or class-scoped variable | `name`, `scope` |
-| `Schema` | A database schema | `name`, `dialect` |
-| `Table` | A database table | `name` |
-| `Column` | A column on a table | `name`, `dataType` |
-| `Endpoint` | An HTTP/gRPC/messaging endpoint | `route`, `method` |
-| `ConfigKey` | A deployed configuration key/value | `name`, `value` |
+| `input_artifact` | A single ingested input (file, document, S3 object) | `path`, `mime_type`, `blob_sha256`, `bytes`, `input_class` |
 
 **Aspirational-intent**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `IntendedBehavior` | A described intent extracted from a design doc | `name`, `description` |
-| `ArchDecision` | A documented architectural decision (ADR or equivalent) | `title`, `decision`, `rationale` |
+| `intended_behavior` | A described intent extracted from a design doc | `name`, `description` |
+| `arch_decision` | A documented architectural decision (ADR or equivalent) | `title`, `decision`, `rationale` |
 
 **Constraint**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `Constraint` | A binding obligation from RFP/PWS/SOW/SLA/control catalog | `name`, `text`, `bindingDocument` |
+| `constraint` | A binding obligation from RFP/PWS/SOW/SLA/control catalog | `name`, `text`, `binding_document` |
 
 **Evidence**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `Evidence` | An observation from runtime: log line, incident, test result, audit trail | `kind`, `observedAt` |
+| `evidence` | An observation from runtime: log line, incident, test result, audit trail | `kind`, `observed_at` |
 
 **Tribal-knowledge**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `TribalKnowledge` | An SME-sourced annotation | `text`, `attributedTo`, `confidence` |
+| `tribal_knowledge` | An SME-sourced annotation | `text`, `attributed_to`, `confidence` |
 
 **Reference-pattern**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `ReferencePattern` | An external pattern, control, or standard | `corpus`, `name` |
+| `reference_pattern` | An external pattern, control, or standard | `corpus`, `name` |
 
 **Analyst-output**
 
 | Label | Description | Required props |
 |-------|-------------|----------------|
-| `Finding` | An analyst-produced finding | `analystName`, `severity`, `summary` |
-| `Inventory` | A counted catalog of artifacts | `analystName`, `category`, `count` |
-| `Coverage` | A coverage measurement | `analystName`, `subject`, `metric`, `value` |
-| `RiskItem` | An identified risk | `analystName`, `description`, `likelihood`, `impact` |
+| `finding` | An analyst-produced finding | `analyst_name`, `severity`, `summary` |
+| `inventory` | A counted catalog of artifacts | `analyst_name`, `category`, `count` |
+| `coverage` | A coverage measurement | `analyst_name`, `subject`, `metric`, `value` |
+| `risk_item` | An identified risk | `analyst_name`, `description`, `likelihood`, `impact` |
 
-Templates may extend with their own labels (declared in the template manifest, §4); template-extended labels are namespaced (`Template_<name>_<Label>`).
+#### Tier 2 — Solution-domain vocabulary (timeless within a domain)
+
+Each engagement declares its solution domain as one of its first acts; the declaration selects which Tier-2 vocabulary applies. v0.1 ships one named domain.
+
+**Domain `ba` — Business Automation**
+
+The domain of solutions whose substance is forms, processes, organizations, approvals, agreements, business rules, transactions, accounts, and policies. Covers procurement, claims processing, audit, case management, regulatory compliance workflows, and most enterprise-line-of-business systems. A 1935 procurement office, a 1985 COBOL transaction system, a 2026 ServiceNow workflow, and a 2055 agent-driven workflow are all instances of the same kind of solution; the Tier-2 labels below describe what stays stable across all of them.
+
+| Label | Description | Required props |
+|-------|-------------|----------------|
+| `ba.form` | A structured collection of fields submitted to a process | `name`, `purpose` |
+| `ba.process` | A defined sequence of activities producing an outcome | `name`, `outcome` |
+| `ba.workflow` | A specific routed instance of a process | `name`, `process_id` |
+| `ba.role` | A named position or responsibility a person or system holds | `name`, `responsibilities` |
+| `ba.organization` | A party (agency, division, vendor, customer) | `name`, `kind` |
+| `ba.approval` | A required affirmative decision by a role | `name`, `required_role`, `subject` |
+| `ba.document` | A structured or unstructured document the solution references | `name`, `kind` |
+| `ba.agreement` | A formal commitment between parties (MoU, contract, SLA, SOW) | `name`, `parties`, `effective_range` |
+| `ba.business_rule` | A declarative rule constraining behavior | `name`, `expression`, `rationale` |
+| `ba.transaction` | A single discrete unit of business activity | `kind`, `occurred_at` |
+| `ba.account` | An identified party-on-record (customer, vendor, employee, asset) | `name`, `kind`, `external_id` |
+| `ba.counterparty` | A party on the other side of a transaction or agreement | `name`, `kind` |
+| `ba.ledger` | An accumulating record of transactions of a kind | `name`, `kind` |
+| `ba.policy` | A binding statement of organizational practice | `name`, `text`, `scope` |
+
+Future Tier-2 domains anticipated but not built in v0.1: `mfg` (manufacturing and control systems), `clin` (clinical and healthcare), `infra` (infrastructure and engineering), `research` (research and experimentation). New domains are additive and do not require a major bump (see §7).
+
+#### Tier 3 — Implementation-paradigm vocabulary (era-namespaced)
+
+Names what the current substrate happens to call its units of behavior and structure. Era-namespaced so successor paradigms land as new namespaces beside the old, not as overwrites.
+
+**Paradigm `cs_2026` — Current computing substrate**
+
+The set of implementation units characteristic of the 2026 paradigm: object-oriented or procedural source code in text files, relational schemas, HTTP/gRPC endpoints, key-value configuration.
+
+| Label | Description | Required props |
+|-------|-------------|----------------|
+| `cs_2026.source_file` | A single source file | `path`, `language`, `blob_sha256` |
+| `cs_2026.function` | A function/method/procedure | `name`, `arity`, `language` |
+| `cs_2026.class` | A class/type/struct/record | `name`, `language` |
+| `cs_2026.interface` | An interface/protocol/trait | `name`, `language` |
+| `cs_2026.variable` | A module-scoped or class-scoped variable | `name`, `scope` |
+| `cs_2026.schema` | A database schema | `name`, `dialect` |
+| `cs_2026.table` | A database table | `name` |
+| `cs_2026.column` | A column on a table | `name`, `data_type` |
+| `cs_2026.endpoint` | An HTTP/gRPC/messaging endpoint | `route`, `method` |
+| `cs_2026.config_key` | A deployed configuration key/value | `name`, `value` |
+
+When the implementation substrate turns over, a new `cs_<era>.*` paradigm namespace lands beside `cs_2026.*`. Both layers persist; both bind to the same Tier-1 and Tier-2 nodes via the edges in §2.2. Templates may also extend with their own labels (declared in the template manifest, §4); template-extended labels live under the template namespace, `tmpl.<template_name>.<label>`.
+
+#### How the three tiers compose
+
+A typical solution-to-implementation chain in the graph:
+
+```
+cs_2026.endpoint "POST /approvals"
+   --IMPLEMENTS_INTENT_OF-->
+ba.approval "Director approval of POs over $10K"
+   --PART_OF_PROCESS-->
+ba.process "Purchase Order Lifecycle"
+   --GOVERNED_BY-->
+constraint "FAR 13.106-1(c) — micro-purchase threshold"
+```
+
+When the codebase is rewritten in whatever lands in 2045, the `cs_2026.endpoint` does not move. A new `cs_2045.<something>` joins the graph beside it, bound to the same `ba.approval` by the same edge type. The Tier-1 `constraint` and the Tier-2 `ba.approval` and `ba.process` are the stable spine; the paradigm layers accumulate beneath.
 
 ### 2.2 — Edge types (v0.1 set)
 
 Edges are grouped by purpose. Every edge carries the common props in §2.3 plus per-type props.
 
-**Structural (within ground-truth)**
+Edge types are uppercase with underscores (`SNAKE_CASE`) and are not namespaced — they read as verbs across all three node tiers without ambiguity.
+
+**Structural (within Tier-3 implementation paradigm)**
+
+These describe relationships among paradigm units. The label set below is named for `cs_2026.*` nodes; analogous edges within a future `cs_<era>.*` paradigm are declared by that paradigm namespace and may differ.
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `DECLARES` | Container → contained | A file/module declares a function; a class declares a method |
-| `EXTENDS` | Subtype → supertype | Class inheritance, interface extension |
-| `IMPLEMENTS` | Class → interface | Interface implementation |
-| `CALLS` | Caller → callee | Function call (may carry `siteCount`) |
-| `READS` / `WRITES` | Function ↔ variable/column/configkey | Data access |
-| `DEPENDS_ON` | Module → module | Import / link-time dependency |
-| `EXPOSES` | Module → endpoint | Module exposes a route |
-| `BELONGS_TO` | Column → table; table → schema | Containment in data model |
-| `REFERENCES` | Column → column | Foreign key |
+| `DECLARES` | container → contained | A file/module declares a function; a class declares a method |
+| `EXTENDS` | subtype → supertype | Class inheritance, interface extension |
+| `IMPLEMENTS` | class → interface | Interface implementation |
+| `CALLS` | caller → callee | Function call (may carry `site_count`) |
+| `READS` / `WRITES` | function ↔ variable/column/config_key | Data access |
+| `DEPENDS_ON` | module → module | Import / link-time dependency |
+| `EXPOSES` | module → endpoint | Module exposes a route |
+| `BELONGS_TO` | column → table; table → schema | Containment in data model |
+| `REFERENCES` | column → column | Foreign key |
 
-**Intent-to-reality**
+**Tier-3 → Tier-2 (paradigm-to-domain)**
 
-| Type | Direction | Description |
-|------|-----------|-------------|
-| `INTENDS_TO_IMPLEMENT` | IntendedBehavior → ground-truth node | "This intent maps to this code" |
-| `DRIFTS_FROM` | Ground-truth → IntendedBehavior | "This code drifts from the stated intent" |
-| `DECIDED_BY` | Any node → ArchDecision | "This was the consequence of this decision" |
-
-**Contract**
+These edges are how the implementation substrate binds to the substrate-independent domain spine. They are the edges that survive paradigm transitions — a new `cs_<era>.*` layer lands and connects to the same Tier-2 nodes via these same edge types.
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `SATISFIES` | Ground-truth node → Constraint | "This code satisfies this constraint" |
-| `MAY_VIOLATE` | Ground-truth node → Constraint | "This code is at risk of violating this constraint" |
-| `UNCOVERED_BY` | Constraint → (no target) | A self-loop marker: this constraint has no satisfying artifact |
+| `IMPLEMENTS_INTENT_OF` | Tier-3 node → Tier-2 node | This implementation unit realizes a domain element (e.g. `cs_2026.endpoint` IMPLEMENTS_INTENT_OF `ba.approval`) |
+| `REALIZES_FORM` | Tier-3 node → `ba.form` | This implementation renders or processes this business form |
+| `EXECUTES_PROCESS` | Tier-3 node → `ba.process` | This implementation carries out this business process |
+| `ENFORCES_RULE` | Tier-3 node → `ba.business_rule` | This implementation enforces this business rule |
+| `RECORDS_TRANSACTION` | Tier-3 node → `ba.transaction` | This implementation creates or persists this kind of transaction |
 
-**Evidence**
+**Intra-Tier-2 (within solution-domain)**
+
+Domain-internal relationships. The set below is the v0.1 `ba` set; other Tier-2 domains declare their own.
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `OBSERVED_FOR` | Evidence → ground-truth node | "This evidence pertains to this function/endpoint" |
-| `DEMONSTRATES` | Evidence → Constraint | "This evidence demonstrates this constraint was met (or violated)" |
+| `PART_OF_PROCESS` | `ba.approval`/`ba.form`/`ba.workflow` → `ba.process` | This element is a step or component of this process |
+| `ASSIGNED_TO_ROLE` | `ba.approval`/`ba.workflow` → `ba.role` | This element requires action by this role |
+| `HELD_BY_ORG` | `ba.role` → `ba.organization` | This role exists within this organization |
+| `BINDS` | `ba.agreement` → `ba.organization`/`ba.role` | This agreement binds this party |
+| `RECORDED_IN` | `ba.transaction` → `ba.ledger` | This transaction is recorded in this ledger |
+| `INVOLVES` | `ba.transaction` → `ba.account`/`ba.counterparty` | This transaction involves this party |
+
+**Intent-to-reality (Tier-2 or Tier-3 → Tier-1)**
+
+These bind any node (Tier-2 or Tier-3) to the timeless intent and decision spine.
+
+| Type | Direction | Description |
+|------|-----------|-------------|
+| `INTENDS_TO_IMPLEMENT` | `intended_behavior` → Tier-2 or Tier-3 node | "This intent maps to this element" |
+| `DRIFTS_FROM` | Tier-2 or Tier-3 node → `intended_behavior` | "This element drifts from the stated intent" |
+| `DECIDED_BY` | any node → `arch_decision` | "This was the consequence of this decision" |
+
+**Contract (any node → Tier-1 constraint)**
+
+| Type | Direction | Description |
+|------|-----------|-------------|
+| `GOVERNED_BY` | Tier-2 node → `constraint` | A domain element is bound by this constraint (e.g. `ba.process` GOVERNED_BY `constraint`) |
+| `SATISFIES` | Tier-2 or Tier-3 node → `constraint` | "This element satisfies this constraint" |
+| `MAY_VIOLATE` | Tier-2 or Tier-3 node → `constraint` | "This element is at risk of violating this constraint" |
+| `UNCOVERED_BY` | `constraint` → (no target) | Self-loop marker: this constraint has no satisfying artifact |
+
+**Evidence (Tier-1 evidence → anywhere)**
+
+| Type | Direction | Description |
+|------|-----------|-------------|
+| `OBSERVED_FOR` | `evidence` → Tier-2 or Tier-3 node | "This evidence pertains to this element" |
+| `DEMONSTRATES` | `evidence` → `constraint` | "This evidence demonstrates this constraint was met (or violated)" |
 
 **Tribal**
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `ANNOTATES` | TribalKnowledge → any node | SME annotation attached to another node |
+| `ANNOTATES` | `tribal_knowledge` → any node | SME annotation attached to another node |
 
 **Reference/classification**
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `MATCHES_PATTERN` | Project node → ReferencePattern | "This code/structure matches this pattern" |
-| `MAPS_TO_CONTROL` | Constraint → ReferencePattern | "This requirement maps to this control" |
+| `MATCHES_PATTERN` | any node → `reference_pattern` | "This element matches this pattern" |
+| `MAPS_TO_CONTROL` | `constraint` → `reference_pattern` | "This requirement maps to this control" |
 
 **Analyst-output**
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `FINDING_ABOUT` | Finding → any node | The subject of a finding |
-| `EVIDENCED_BY` | Finding → Evidence/InputArtifact/source-node | The supporting evidence for a finding |
-| `INVENTORIES` | Inventory → category-of-nodes | Inventory groups |
-| `MEASURES` | Coverage → subject | Coverage subject linkage |
+| `FINDING_ABOUT` | `finding` → any node | The subject of a finding |
+| `EVIDENCED_BY` | `finding` → `evidence`/`input_artifact`/source-node | The supporting evidence for a finding |
+| `INVENTORIES` | `inventory` → category-of-nodes | Inventory groups |
+| `MEASURES` | `coverage` → subject | Coverage subject linkage |
 
 **Provenance & lifecycle**
 
 | Type | Direction | Description |
 |------|-----------|-------------|
-| `DERIVED_FROM` | Any node → InputArtifact | "This node was derived from this input" |
-| `EMITTED_BY` | Any node → parser-name | "This node was emitted by this parser run" |
-| `SUPERSEDED_BY` | Old node → new node | Versioning: a re-parsed input may supersede a prior node |
+| `DERIVED_FROM` | any node → `input_artifact` | "This node was derived from this input" |
+| `EMITTED_BY` | any node → parser-name | "This node was emitted by this parser run" |
+| `SUPERSEDED_BY` | old node → new node | Versioning: a re-parsed input may supersede a prior node |
 
 ### 2.3 — Common properties
 
@@ -662,7 +749,10 @@ Tokens are **never written to logs, audit events, or graph nodes.** Only the `us
 
 The following changes within a v0.x line are **non-breaking**:
 
-- New node labels (§2.1)
+- New Tier-2 node labels within an existing solution domain (e.g. adding `ba.<new_label>` to the business automation domain)
+- New Tier-2 solution domains (e.g. introducing `mfg.*`, `clin.*`, `infra.*`, `research.*`)
+- New Tier-3 implementation-paradigm namespaces (e.g. introducing `cs_2045.*` beside the existing `cs_2026.*`)
+- New Tier-3 node labels within an existing paradigm namespace
 - New edge types (§2.2)
 - New chainblocks audit-event kinds (§3.2)
 - New optional fields on any schema (DSL records, audit payloads, template manifest, identity records)
@@ -675,10 +765,11 @@ Consumers reading older streams against newer SI must ignore unknown labels/type
 
 The following changes require **v0 → v1**:
 
-- Renames or removals of node labels, edge types, audit-event kinds, or required fields
-- Semantic changes to existing fields (e.g., changing `epistemicClass` allowed values)
+- Renames or removals of any node label at any tier, edge type, audit-event kind, or required field
+- **Any change to the Tier-1 solution-universal vocabulary** — the timeless spine is the load-bearing layer the substrate-independence claim depends on; additions, renames, removals, and semantic changes all require a major bump and a documented migration. (Compare: additions within an existing Tier-2 domain or Tier-3 paradigm are routine.)
+- Semantic changes to existing fields (e.g., changing `input_class` allowed values)
 - Format breaks (e.g., changing DSL from JSONL to a different serialization)
-- Promotion-policy semantic changes (e.g., changing `tribal-knowledge` from operator-review-default to auto-promote-default)
+- Promotion-policy semantic changes (e.g., changing `tribal_knowledge` from operator-review-default to auto-promote-default)
 - Permission-matrix changes that remove an existing role's permissions
 - Container-set or compose-stack restructuring that breaks the four-service layout
 
@@ -691,7 +782,7 @@ Every SI artifact declares its schema version:
 - `.sigdsl` files declare via the header comment (`// sigdsl/v1`)
 - Template manifests declare via `version` (template) and `siVersion` (compatibility range)
 - chainblocks audit events declare via the chainblocks block format
-- The graph backend records `siSchemaVersion` as a property on a singleton `_Meta` node at first write
+- The graph backend records `siSchemaVersion` and a `domainNamespaces` list (e.g. `["ba"]`) and a `paradigmNamespaces` list (e.g. `["cs_2026"]`) as properties on a singleton `_Meta` node at first write; each subsequent ingestion may add to these lists
 
 ---
 

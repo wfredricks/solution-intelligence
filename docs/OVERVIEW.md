@@ -112,6 +112,8 @@ Different inputs have different epistemic status. The framework encodes the dist
 
 Every SI project starts by declaring **which input classes are present** and **which parsers handle each kind**. This is the "tuning" — the customer-specific mix.
 
+**Epistemic class and schema tier are orthogonal axes.** A node's epistemic class (one of the six in the table above plus `analyst-output`) is about *what kind of fact* the node represents. A node's schema tier (Tier 1 solution-universal, Tier 2 solution-domain, Tier 3 implementation-paradigm — see `MODEL.md` §2.1) is about *what level of stability across substrates* the node's label sits at. An item of ground truth may be a Tier-3 `cs_2026.function`; an item of intent may be a Tier-2 `ba.process` description or a Tier-1 `intended_behavior`; an item of constraint is always a Tier-1 `constraint`. The two axes describe different things about a node and both apply at the same time.
+
 ---
 
 ## The standard deliverable suite
