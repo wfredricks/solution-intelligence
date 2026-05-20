@@ -6,7 +6,7 @@ Solution Intelligence (SI) is a framework for turning the messy reality of an ex
 
 This repository holds the **left bookend** of the SI v0.1 build: the design corpus (STORY, REQUIREMENTS, MODEL, OVERVIEW, USE-CASES, FEATURES, PIPELINE), the bookend SIG that validates the design before code is written, and the planning + sub-agent specifications for the right bookend (the actual implementation in Stages 1-7).
 
-> **Status:** Pre-implementation. The design corpus and the bookend SIG are stable. Stage 1a of the implementation has shipped as three sibling repos (see below). Stages 1b through 7 are in progress.
+> **Status:** Pre-implementation. The design corpus and the bookend SIG are stable. Stages 1a and 1b of the implementation have shipped as eight sibling repos in `wfredricks/` (three flat substrate libraries + five nested runtime repos, see below). Stages 2 through 7 are in progress.
 
 ---
 
@@ -79,7 +79,9 @@ Four services per project, isolated by Docker compose stack. Every state-changin
 
 ## Sibling repositories
 
-The Stage 1a output — three standalone-publishable libraries that SI builds atop — are sibling repos in the `wfredricks/` namespace:
+The Stage 1a + 1b output — eight repositories in the `wfredricks/` namespace — are listed below. Stage 1a (three flat sibling repos) shipped the standalone-publishable libraries that SI builds atop. Stage 1b (five nested runtime repos, living under `artifacts/si-runtime/` in the bookend's workspace) scaffolds the SI-internal runtime surface.
+
+### Stage 1a — substrate libraries (flat siblings)
 
 | Repo | Purpose | Stage filled |
 |------|---------|--------------|
@@ -87,7 +89,17 @@ The Stage 1a output — three standalone-publishable libraries that SI builds at
 | **[`solution-intelligence-parsers`](https://github.com/wfredricks/solution-intelligence-parsers)** | Parser library: `markdown-intent`, `csharp-treesitter` stub, future PDF / log / SQL parsers. Defines the portable Parser interface. | Stage 4 |
 | **[`solution-intelligence-analysts`](https://github.com/wfredricks/solution-intelligence-analysts)** | Analyst library: Inventory, DependencyAtlas, IntentVsReality, ConstraintCoverage, RiskSurface. Defines the portable Analyst interface. | Stage 5 |
 
-The remaining five repos (`-cli`, `-identity`, `-studio`, `-window`, `-templates`) are SI-internal and will land in Stage 1b under a `si-build/` namespace.
+### Stage 1b — runtime surface (nested under `artifacts/si-runtime/`)
+
+All five live in the same `wfredricks/` namespace and were tagged `v0.1.0-pre` on 2026-05-20:
+
+| Repo | Purpose | Stage filled |
+|------|---------|--------------|
+| **[`solution-intelligence-cli`](https://github.com/wfredricks/solution-intelligence-cli)** | SI/CLI — operator entrypoint: `si init`, `si add`, `si destroy`. Port allocation per REQ-SI-007, four-service Docker stack provisioning. | Stage 2 |
+| **[`solution-intelligence-identity`](https://github.com/wfredricks/solution-intelligence-identity)** | SI/I — bangauth wrapper enforcing SI's 5-role permission matrix (operator, analyst, reviewer, consumer, admin). | Stage 6 |
+| **[`solution-intelligence-studio`](https://github.com/wfredricks/solution-intelligence-studio)** | SI/S — Studio: Blackboard substrate, parser host, analyst host, deliverable generator host. | Stage 5 |
+| **[`solution-intelligence-window`](https://github.com/wfredricks/solution-intelligence-window)** | SI/W — Window: consumer-facing, role-scoped, read-only views over a SIG. | Stage 6 |
+| **[`solution-intelligence-templates`](https://github.com/wfredricks/solution-intelligence-templates)** | Project skeletons cloned by `si init`. Content repo, not an npm package. | Stage 4 |
 
 ---
 
