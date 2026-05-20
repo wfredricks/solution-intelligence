@@ -26,9 +26,14 @@ RUN rm -rf /app/node_modules/polygraph-db && mkdir -p /app/node_modules/polygrap
 COPY polygraph/dist /app/node_modules/polygraph-db/dist
 COPY polygraph/package.json /app/node_modules/polygraph-db/package.json
 
-# Merge polygraph's prod deps (classic-level, etc) into the main node_modules.
+# Merge polygraph's prod deps (classic-level, msgpackr, etc) into the main node_modules.
+# Why `cp -R src/* dst/` instead of `cp -rn src/. dst/`: BusyBox cp on Alpine
+# silently no-ops on the `src/.` form (verified 2026-05-20 — produced an image
+# missing msgpackr and classic-level). The wildcard form copies reliably.
+# No conflicts in practice because polygraph-db's deps are disjoint from
+# polygraph-viz's.
 COPY polygraph/prod-deps/node_modules /app/node_modules-pg-extra
-RUN cp -rn /app/node_modules-pg-extra/. /app/node_modules/ && rm -rf /app/node_modules-pg-extra
+RUN cp -R /app/node_modules-pg-extra/* /app/node_modules/ && rm -rf /app/node_modules-pg-extra
 
 # Top-level package.json for the container app (just for completeness).
 COPY solution-intelligence/sig-build/viz/package.json /app/package.json
