@@ -37,4 +37,4 @@ RUN mkdir -p /data
 
 EXPOSE 4444
 
-CMD ["node", "/app/node_modules/polygraph-viz/dist/cli.js", "--path", "/data", "--port", "4444"]
+CMD ["node", "/app/node_modules/polygraph-viz/dist/cli.js", "--path", "/data", "--port", "4444", "--title", "Solution Intel"]
