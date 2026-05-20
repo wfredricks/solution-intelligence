@@ -1,0 +1,10 @@
+{
+  "name": "si-sig-viz-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "polygraph-db": "file:/deps/polygraph",
+    "polygraph-viz": "file:/deps/polygraph-viz"
+  }
+}

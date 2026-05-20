@@ -1,0 +1,44 @@
+# si-sig-load — one-shot ingest container.
+#
+# Strategy: install tsx FIRST against an empty package.json so npm has
+# nothing else to "fix up". Then materialize polygraph-db from staging.
+# After the materialize step, never run npm install again — npm would
+# re-resolve the file: dep and re-introduce the symlink we just removed.
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Step 1: install tsx into /app/node_modules with no other deps declared.
+RUN echo '{"name":"si-sig-load","version":"0.1.0","private":true,"type":"module"}' > /app/package.json && \
+    npm install --no-audit --no-fund --no-package-lock --ignore-scripts tsx@4
+
+# Step 2: stage polygraph files
+COPY polygraph/prod-deps/node_modules /staging/prod-deps
+COPY polygraph/dist /staging/polygraph-dist
+COPY polygraph/package.json /staging/polygraph-package.json
+
+# Step 3: merge polygraph's prod deps into /app/node_modules and materialize
+# polygraph-db as a real directory (not a symlink). The tsx layer above
+# already exists; cp -rn (no-clobber) preserves it.
+RUN set -e && \
+    echo '=== staging contents ===' && ls /staging/ && \
+    echo '=== prod-deps contents (first 20) ===' && ls /staging/prod-deps/ | head -20 && \
+    echo '=== app/node_modules BEFORE ===' && ls /app/node_modules/ && \
+    echo '=== copying prod-deps -> app/node_modules ===' && \
+    cp -r /staging/prod-deps/. /app/node_modules/ && \
+    echo '=== app/node_modules AFTER cp ===' && ls /app/node_modules/ | head -25 && \
+    rm -f /app/node_modules/polygraph-db && \
+    mkdir -p /app/node_modules/polygraph-db && \
+    cp -r /staging/polygraph-dist /app/node_modules/polygraph-db/dist && \
+    cp /staging/polygraph-package.json /app/node_modules/polygraph-db/package.json && \
+    rm -rf /staging && \
+    echo '=== FINAL polygraph-db ===' && ls -la /app/node_modules/polygraph-db/dist | head -5 && \
+    echo '=== FINAL app/node_modules count ===' && ls /app/node_modules/ | wc -l
+
+# Step 4: bring the loader scripts. These do NOT trigger any npm install.
+COPY solution-intelligence/sig-build/load/loaders /app/loaders
+
+RUN mkdir -p /data /sources
+
+CMD ["echo", "Usage: docker compose run --rm si-sig-load npx tsx /app/loaders/<loader>.ts"]

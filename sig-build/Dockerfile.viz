@@ -1,0 +1,40 @@
+# si-sig-viz — read-only browser visualizer for the build SIG.
+#
+# Strategy: COPY pre-resolved prod-deps from the host. Both polygraph and
+# polygraph-viz have a prod-deps/ directory prepared on the host via
+# `npm install --omit=dev --ignore-scripts --no-package-lock`. We then
+# inline polygraph-db's dist into viz's node_modules to break the file:
+# symlink. This avoids any npm activity inside the container.
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# polygraph-viz prod-deps brings hono, @hono/node-server, and a symlinked
+# polygraph-db pointer.
+COPY polygraph-viz/prod-deps/node_modules /app/node_modules
+
+# polygraph-viz itself is also a symlink in prod-deps; replace whether
+# it's a symlink (rm -f handles that) or a real directory (rm -rf does).
+RUN rm -rf /app/node_modules/polygraph-viz && mkdir -p /app/node_modules/polygraph-viz
+COPY polygraph-viz/dist /app/node_modules/polygraph-viz/dist
+COPY polygraph-viz/public /app/node_modules/polygraph-viz/public
+COPY polygraph-viz/package.json /app/node_modules/polygraph-viz/package.json
+
+# Replace the symlinked polygraph-db with a real copy (same pattern).
+RUN rm -rf /app/node_modules/polygraph-db && mkdir -p /app/node_modules/polygraph-db
+COPY polygraph/dist /app/node_modules/polygraph-db/dist
+COPY polygraph/package.json /app/node_modules/polygraph-db/package.json
+
+# Merge polygraph's prod deps (classic-level, etc) into the main node_modules.
+COPY polygraph/prod-deps/node_modules /app/node_modules-pg-extra
+RUN cp -rn /app/node_modules-pg-extra/. /app/node_modules/ && rm -rf /app/node_modules-pg-extra
+
+# Top-level package.json for the container app (just for completeness).
+COPY solution-intelligence/sig-build/viz/package.json /app/package.json
+
+RUN mkdir -p /data
+
+EXPOSE 4444
+
+CMD ["node", "/app/node_modules/polygraph-viz/dist/cli.js", "--path", "/data", "--port", "4444"]

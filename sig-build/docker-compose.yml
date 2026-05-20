@@ -1,0 +1,53 @@
+# si-sig — the Solution Intelligence build SIG.
+#
+# Two services share a named volume si-sig-data which holds the embedded
+# PolyGraph LevelDB database:
+#
+#   si-sig-viz:   polygraph-viz running as a long-lived service.
+#                 Browser viewer at http://localhost:30100. Read-only.
+#
+#   si-sig-load:  one-shot ingest container. Run via `docker compose run`
+#                 against the same volume. The viz service must be stopped
+#                 first because LevelDB allows only one writer.
+#
+# Workflow for ingest:
+#   docker compose stop si-sig-viz
+#   docker compose run --rm si-sig-load node /app/loaders/requirements.js
+#   docker compose start si-sig-viz
+#
+# Start fresh: docker compose down -v && docker compose up -d si-sig-viz
+
+services:
+  si-sig-viz:
+    build:
+      context: ../..
+      dockerfile: solution-intelligence/sig-build/Dockerfile.viz
+    image: si-sig-viz:0.2.0-pre
+    container_name: si-sig-viz
+    ports:
+      - "30100:4444"
+    volumes:
+      - si-sig-data:/data
+    restart: unless-stopped
+    labels:
+      - "com.solution-intelligence.role=build-sig-viz"
+
+  si-sig-load:
+    build:
+      context: ../..
+      dockerfile: solution-intelligence/sig-build/Dockerfile.load
+    image: si-sig-load:0.1.0
+    container_name: si-sig-load
+    volumes:
+      - si-sig-data:/data
+      - ../REQUIREMENTS.md:/sources/REQUIREMENTS.md:ro
+      - ../STORY.md:/sources/STORY.md:ro
+      - ../MODEL.md:/sources/MODEL.md:ro
+      - ../docs:/sources/docs:ro
+    profiles: ["ingest"]
+    labels:
+      - "com.solution-intelligence.role=build-sig-load"
+
+volumes:
+  si-sig-data:
+    name: si-sig-data

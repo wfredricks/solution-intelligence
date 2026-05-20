@@ -1,0 +1,9 @@
+{
+  "name": "si-sig-load-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "polygraph-db": "file:/deps/polygraph"
+  }
+}
