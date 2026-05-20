@@ -44,6 +44,7 @@ services:
       - ../STORY.md:/sources/STORY.md:ro
       - ../MODEL.md:/sources/MODEL.md:ro
       - ../docs:/sources/docs:ro
+      - ./load/csv:/sources/csv:ro
     profiles: ["ingest"]
     labels:
       - "com.solution-intelligence.role=build-sig-load"

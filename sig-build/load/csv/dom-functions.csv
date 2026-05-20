@@ -1,0 +1,69 @@
+id,name,signature,returnType,kind,isAsync,fileId,sourceLineStart,sourceLineEnd
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:parseCsv,parseCsv,(text: string): CsvRow[],CsvRow[],function,false,file:solution-intelligence:sig-build/load/loaders/csv-loader.ts,49,70
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:readCsv,readCsv,(path: string): CsvRow[],CsvRow[],function,false,file:solution-intelligence:sig-build/load/loaders/csv-loader.ts,105,107
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:LoadCounter.warn,LoadCounter.warn,(msg: string): void,void,method,false,file:solution-intelligence:sig-build/load/loaders/csv-loader.ts,120,123
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:LoadCounter.summary,LoadCounter.summary,(label: string): void,void,method,false,file:solution-intelligence:sig-build/load/loaders/csv-loader.ts,125,131
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:isDuplicateError,isDuplicateError,(err: unknown): boolean,boolean,function,false,file:solution-intelligence:sig-build/load/loaders/csv-loader.ts,139,143
+fn:polygraph-viz:src/client/ui/chat.ts:installChat,installChat,(opts: ChatBootOptions): void,void,function,false,file:polygraph-viz:src/client/ui/chat.ts,150,499
+fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,installCommandPalette,(opts: InstallOptions): () => void,() => void,function,false,file:polygraph-viz:src/client/ui/command-palette.ts,96,457
+fn:polygraph-viz:src/client/ui/commands.ts:exampleForArg,exampleForArg,"(arg: CommandArg, graph: GraphExport): string",string,function,false,file:polygraph-viz:src/client/ui/commands.ts,56,88
+fn:polygraph-viz:src/client/ui/commands.ts:parseCommand,parseCommand,(text: string): ParsedCommand | null,ParsedCommand | null,function,false,file:polygraph-viz:src/client/ui/commands.ts,409,417
+fn:polygraph-viz:src/client/ui/commands.ts:filterCommands,filterCommands,(prefix: string): CommandSpec[],CommandSpec[],function,false,file:polygraph-viz:src/client/ui/commands.ts,423,427
+fn:polygraph-viz:src/client/ui/inspector.ts:clearInspector,clearInspector,(): void,void,function,false,file:polygraph-viz:src/client/ui/inspector.ts,23,28
+fn:polygraph-viz:src/client/ui/inspector.ts:showNode,showNode,(node: VizNode): void,void,function,false,file:polygraph-viz:src/client/ui/inspector.ts,33,57
+fn:polygraph-viz:src/client/ui/inspector.ts:showGroup,showGroup,"(label: string, members: VizNode[]): void",void,function,false,file:polygraph-viz:src/client/ui/inspector.ts,62,83
+fn:polygraph-viz:src/client/ui/inspector.ts:pickDisplayName,pickDisplayName,(node: VizNode): string,string,function,false,file:polygraph-viz:src/client/ui/inspector.ts,97,104
+fn:polygraph-viz:src/client/ui/inspector.ts:showEdge,showEdge,"(edge: VizEdge, source: VizNode | undefined, target: VizNode | undefined): void",void,function,false,file:polygraph-viz:src/client/ui/inspector.ts,109,147
+fn:polygraph-viz:src/client/ui/inspector.ts:showAggregate,showAggregate,"(fromGroup: string, toGroup: string, edges: VizEdge[], vizById: Map<string, VizNode>): void",void,function,false,file:polygraph-viz:src/client/ui/inspector.ts,154,203
+fn:polygraph-viz:src/client/ui/inspector.ts:nodeMatches,nodeMatches,"(node: VizNode, query: string): boolean",boolean,function,false,file:polygraph-viz:src/client/ui/inspector.ts,209,220
+fn:polygraph-viz:src/client/ui/palette.ts:primaryLabel,primaryLabel,(labels: string[]): string,string,function,false,file:polygraph-viz:src/client/ui/palette.ts,84,88
+fn:polygraph-viz:src/client/ui/palette.ts:buildColorMap,buildColorMap,(nodes: VizNode[]): ColorMap,ColorMap,function,false,file:polygraph-viz:src/client/ui/palette.ts,112,153
+fn:polygraph-viz:src/client/ui/palette.ts:colorForLabel,colorForLabel,(label: string): string,string,function,false,file:polygraph-viz:src/client/ui/palette.ts,168,178
+fn:polygraph-viz:src/client/ui/stats.ts:renderStats,renderStats,(_graph: GraphExport): Promise<void>,Promise<void>,function,true,file:polygraph-viz:src/client/ui/stats.ts,21,46
+fn:polygraph-viz:src/client/ui/theme.ts:installTheme,installTheme,(): void,void,function,false,file:polygraph-viz:src/client/ui/theme.ts,43,62
+fn:polygraph-viz:src/client/ui/toolbar.ts:installToolbar,installToolbar,(handlers: ToolbarHandlers): void,void,function,false,file:polygraph-viz:src/client/ui/toolbar.ts,24,55
+fn:polygraph-viz:src/client/views/chord.ts:renderChord,renderChord,"(container: HTMLElement, graph: GraphExport): ViewHandle",ViewHandle,function,false,file:polygraph-viz:src/client/views/chord.ts,79,249
+fn:polygraph-viz:src/client/views/force.ts:renderForce,renderForce,"(container: HTMLElement, graph: GraphExport): ViewHandle",ViewHandle,function,false,file:polygraph-viz:src/client/views/force.ts,72,536
+fn:polygraph-viz:src/client/views/sankey.ts:renderSankey,renderSankey,"(container: HTMLElement, graph: GraphExport): ViewHandle",ViewHandle,function,false,file:polygraph-viz:src/client/views/sankey.ts,434,600
+fn:polygraph-viz:src/graph-api.ts:computeStats,computeStats,(data: GraphExport): GraphStats,GraphStats,function,false,file:polygraph-viz:src/graph-api.ts,17,43
+fn:polygraph-viz:src/graph-api.ts:computeDegrees,computeDegrees,"(data: GraphExport): Map<string, number>","Map<string, number>",function,false,file:polygraph-viz:src/graph-api.ts,49,56
+fn:polygraph-viz:src/graph-api.ts:searchNodes,searchNodes,"(data: GraphExport, query: string): VizNode[]",VizNode[],function,false,file:polygraph-viz:src/graph-api.ts,62,70
+fn:polygraph-viz:src/graph-api.ts:filterByLabels,filterByLabels,"(data: GraphExport, labels: string[]): GraphExport",GraphExport,function,false,file:polygraph-viz:src/graph-api.ts,76,82
+fn:polygraph-viz:src/graph-api.ts:filterByRelTypes,filterByRelTypes,"(data: GraphExport, types: string[]): GraphExport",GraphExport,function,false,file:polygraph-viz:src/graph-api.ts,88,94
+fn:polygraph-viz:src/graph-api.ts:exportGraph,exportGraph,(graph: PolyGraph): Promise<GraphExport>,Promise<GraphExport>,function,true,file:polygraph-viz:src/graph-api.ts,102,149
+fn:polygraph-viz:src/graph-api.ts:connectGraph,connectGraph,(path: string): Promise<PolyGraph>,Promise<PolyGraph>,function,true,file:polygraph-viz:src/graph-api.ts,154,159
+fn:polygraph-viz:src/graph-api.ts:buildDemoGraph,buildDemoGraph,(): GraphExport,GraphExport,function,false,file:polygraph-viz:src/graph-api.ts,165,207
+fn:polygraph-viz:src/middleware.ts:vizMiddleware,vizMiddleware,(_config: { path?: string; url?: string }),inferred,function,false,file:polygraph-viz:src/middleware.ts,9,14
+fn:polygraph-viz:src/nl/answerer.ts:buildAnswerContext,buildAnswerContext,"(graph: GraphExport, rankedHits: RankedHit[], maxNodes = 40): AnswerContextNode[]",AnswerContextNode[],function,false,file:polygraph-viz:src/nl/answerer.ts,40,100
+fn:polygraph-viz:src/nl/answerer.ts:buildAnswerMessages,buildAnswerMessages,"(query: string, history: ChatMessage[], ctx: AnswerContextNode[], kbMatches: KBEntry[]): ChatMessage[]",ChatMessage[],function,false,file:polygraph-viz:src/nl/answerer.ts,177,191
+fn:polygraph-viz:src/nl/answerer.ts:answerOnce,answerOnce,"(bedrock: BedrockClient, graph: GraphExport, schema: SchemaFingerprint, graphTitle: string, query: string, history: ChatMessage[], rankedHits: RankedHit[], kbMatches: KBEntry[]): Promise<string>",Promise<string>,function,true,file:polygraph-viz:src/nl/answerer.ts,196,213
+fn:polygraph-viz:src/nl/answerer.ts:answerStream,answerStream,"(bedrock: BedrockClient, graph: GraphExport, schema: SchemaFingerprint, graphTitle: string, query: string, history: ChatMessage[], rankedHits: RankedHit[], kbMatches: KBEntry[]): AsyncIterable<string>",AsyncIterable<string>,function,true,file:polygraph-viz:src/nl/answerer.ts,218,235
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.describe,BedrockClient.describe,(): { llmModel: string; embedModel: string },{ llmModel: string; embedModel: string },method,false,file:polygraph-viz:src/nl/bedrock.ts,81,83
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.embed,BedrockClient.embed,(text: string): Promise<Float32Array>,Promise<Float32Array>,method,true,file:polygraph-viz:src/nl/bedrock.ts,89,105
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chat,BedrockClient.chat,"(systemPrompt: string, messages: ChatMessage[], options: ChatOptions = {}): Promise<string>",Promise<string>,method,true,file:polygraph-viz:src/nl/bedrock.ts,110,140
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream,BedrockClient.chatStream,"(systemPrompt: string, messages: ChatMessage[], options: Omit<ChatOptions, 'stream'> = {}): AsyncIterable<string>",AsyncIterable<string>,method,true,file:polygraph-viz:src/nl/bedrock.ts,146,186
+fn:polygraph-viz:src/nl/embed-cache.ts:computeSnapshotHash,computeSnapshotHash,(graph: GraphExport): string,string,function,false,file:polygraph-viz:src/nl/embed-cache.ts,58,68
+fn:polygraph-viz:src/nl/embed-cache.ts:nodeSummaryText,nodeSummaryText,(n: VizNode): string,string,function,false,file:polygraph-viz:src/nl/embed-cache.ts,75,104
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk,EmbedCache.loadFromDisk,(): EmbedCacheFile | null,EmbedCacheFile | null,method,false,file:polygraph-viz:src/nl/embed-cache.ts,126,141
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.saveToDisk,EmbedCache.saveToDisk,(): void,void,method,false,file:polygraph-viz:src/nl/embed-cache.ts,143,152
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.size,EmbedCache.size,(): number,number,method,false,file:polygraph-viz:src/nl/embed-cache.ts,154,156
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.getAll,EmbedCache.getAll,(): EmbedCacheEntry[],EmbedCacheEntry[],method,false,file:polygraph-viz:src/nl/embed-cache.ts,158,160
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.has,EmbedCache.has,(nodeId: string): boolean,boolean,method,false,file:polygraph-viz:src/nl/embed-cache.ts,162,164
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.build,EmbedCache.build,"(graph: GraphExport, bedrock: BedrockClient, onProgress?: (done: number, total: number) => void): Promise<void>",Promise<void>,method,true,file:polygraph-viz:src/nl/embed-cache.ts,171,197
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.isStale,EmbedCache.isStale,"(graph: GraphExport, currentEmbedModel: string): boolean",boolean,method,false,file:polygraph-viz:src/nl/embed-cache.ts,203,208
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.searchByEmbedding,EmbedCache.searchByEmbedding,"(queryEmbedding: Float32Array, k = 30): Array<{ nodeId: string; score: number; text: string }>",Array<{ nodeId: string; score: number; text: string }>,method,false,file:polygraph-viz:src/nl/embed-cache.ts,215,231
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load,KnowledgeBase.load,(): void,void,method,false,file:polygraph-viz:src/nl/kb.ts,47,55
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.save,KnowledgeBase.save,(): void,void,method,false,file:polygraph-viz:src/nl/kb.ts,57,60
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.size,KnowledgeBase.size,(): number,number,method,false,file:polygraph-viz:src/nl/kb.ts,62,64
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.add,KnowledgeBase.add,"(entry: Omit<KBEntry, 'id' | 'createdAt'>): KBEntry",KBEntry,method,false,file:polygraph-viz:src/nl/kb.ts,66,75
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.search,KnowledgeBase.search,"(query: string, k = 3): KBEntry[]",KBEntry[],method,false,file:polygraph-viz:src/nl/kb.ts,81,102
+fn:polygraph-viz:src/nl/lexicon.ts:Lexicon.expand,Lexicon.expand,(query: string): string,string,method,false,file:polygraph-viz:src/nl/lexicon.ts,63,74
+fn:polygraph-viz:src/nl/lexicon.ts:loadLexicon,loadLexicon,"(graph: GraphExport, explicitPath?: string): Lexicon",Lexicon,function,false,file:polygraph-viz:src/nl/lexicon.ts,83,128
+fn:polygraph-viz:src/nl/ranker.ts:computeSchemaFingerprint,computeSchemaFingerprint,(graph: GraphExport): SchemaFingerprint,SchemaFingerprint,function,false,file:polygraph-viz:src/nl/ranker.ts,36,51
+fn:polygraph-viz:src/nl/ranker.ts:rankWithLlm,rankWithLlm,"(bedrock: BedrockClient, query: string, schema: SchemaFingerprint, hits: RankerHit[]): Promise<RankedHit[]>",Promise<RankedHit[]>,function,true,file:polygraph-viz:src/nl/ranker.ts,120,160
+fn:polygraph-viz:src/nl/segment.ts:segmentsForNode,segmentsForNode,(node: VizNode): Set<Segment>,Set<Segment>,function,false,file:polygraph-viz:src/nl/segment.ts,53,110
+fn:polygraph-viz:src/nl/segment.ts:segmentForNode,segmentForNode,(node: VizNode): Segment,Segment,function,false,file:polygraph-viz:src/nl/segment.ts,122,128
+fn:polygraph-viz:src/nl/segment.ts:tallySegments,tallySegments,(nodes: VizNode[]): SegmentCounts,SegmentCounts,function,false,file:polygraph-viz:src/nl/segment.ts,139,150
+fn:polygraph-viz:src/nl/segment.ts:sliceSegment,sliceSegment,"(graph: GraphExport, seg: Segment): { nodeIds: Set<string>; segmentMemberCount: number }",{ nodeIds: Set<string>; segmentMemberCount: number },function,false,file:polygraph-viz:src/nl/segment.ts,187,223
+fn:polygraph-viz:src/server.ts:loadGraph,loadGraph,(config: VizConfig): Promise<GraphExport>,Promise<GraphExport>,function,true,file:polygraph-viz:src/server.ts,80,93
+fn:polygraph-viz:src/server.ts:buildApp,buildApp,"(graphData: GraphExport, options: BuildAppOptions = {}): Hono",Hono,function,false,file:polygraph-viz:src/server.ts,122,624

@@ -1,0 +1,78 @@
+# function-features.csv — hand-curated mapping of dom-functions to features.
+# Generated 2026-05-20 from inventory.mts output. Bhai's authorial attribution
+# (the functions are largely code I wrote myself today). Multiple features
+# per function are comma-separated in the `features` column.
+#
+# Columns:
+#   fnId      — sw.function id from dom-functions.csv
+#   features  — pipe-separated FT-SI-NN or FT-SI2-NN ids
+#   note      — optional human note about the mapping
+fnId,features,note
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:parseCsv,FT-SI2-04,CSV ingest framework (Tier-2 build SIG fill-in)
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:readCsv,FT-SI2-04,
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:LoadCounter.warn,FT-SI2-04,
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:LoadCounter.summary,FT-SI2-04,
+fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:isDuplicateError,FT-SI2-04,
+fn:polygraph-viz:src/client/ui/chat.ts:installChat,FT-SI2-01,NL chat drawer UI
+fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,FT-SI2-02,Slash-command palette UI
+fn:polygraph-viz:src/client/ui/commands.ts:exampleForArg,FT-SI2-02,Argument coaching with graph-grounded examples
+fn:polygraph-viz:src/client/ui/commands.ts:parseCommand,FT-SI2-02,Slash-command parser
+fn:polygraph-viz:src/client/ui/commands.ts:filterCommands,FT-SI2-02,Combo-box type-ahead filter
+fn:polygraph-viz:src/client/ui/inspector.ts:clearInspector,FT-SI-09,SI/W consumer window — inspector panel
+fn:polygraph-viz:src/client/ui/inspector.ts:showNode,FT-SI-09,
+fn:polygraph-viz:src/client/ui/inspector.ts:showGroup,FT-SI-09,
+fn:polygraph-viz:src/client/ui/inspector.ts:pickDisplayName,FT-SI-09,
+fn:polygraph-viz:src/client/ui/inspector.ts:showEdge,FT-SI-09,
+fn:polygraph-viz:src/client/ui/inspector.ts:showAggregate,FT-SI-09,
+fn:polygraph-viz:src/client/ui/inspector.ts:nodeMatches,FT-SI-09|FT-SI2-02,Used by both literal-search filter and palette
+fn:polygraph-viz:src/client/ui/palette.ts:primaryLabel,FT-SI-09,Color palette infrastructure
+fn:polygraph-viz:src/client/ui/palette.ts:buildColorMap,FT-SI-09,Collision-free label-color assignment
+fn:polygraph-viz:src/client/ui/palette.ts:colorForLabel,FT-SI-09,
+fn:polygraph-viz:src/client/ui/stats.ts:renderStats,FT-SI-09,Footer stats line
+fn:polygraph-viz:src/client/ui/theme.ts:installTheme,FT-SI-09,Light/dark mode
+fn:polygraph-viz:src/client/ui/toolbar.ts:installToolbar,FT-SI-09|FT-SI2-02,View switching + search input
+fn:polygraph-viz:src/client/views/chord.ts:renderChord,FT-SI-09,Chord d3 view
+fn:polygraph-viz:src/client/views/force.ts:renderForce,FT-SI-09,Force d3 view
+fn:polygraph-viz:src/client/views/sankey.ts:renderSankey,FT-SI-09,Sankey d3 view
+fn:polygraph-viz:src/graph-api.ts:computeStats,FT-SI-07,GraphReader — stats production
+fn:polygraph-viz:src/graph-api.ts:computeDegrees,FT-SI-07,
+fn:polygraph-viz:src/graph-api.ts:searchNodes,FT-SI-07,
+fn:polygraph-viz:src/graph-api.ts:filterByLabels,FT-SI-07,
+fn:polygraph-viz:src/graph-api.ts:filterByRelTypes,FT-SI-07,
+fn:polygraph-viz:src/graph-api.ts:exportGraph,FT-SI-08,SI/G — exporting graph state
+fn:polygraph-viz:src/graph-api.ts:connectGraph,FT-SI-08,
+fn:polygraph-viz:src/graph-api.ts:buildDemoGraph,FT-SI-09,Demo data for the viewer
+fn:polygraph-viz:src/middleware.ts:vizMiddleware,FT-SI-09,Hono middleware for embedding
+fn:polygraph-viz:src/nl/answerer.ts:buildAnswerContext,FT-SI2-01,Graph-walking narrative — subgraph snapshot
+fn:polygraph-viz:src/nl/answerer.ts:buildAnswerMessages,FT-SI2-01,
+fn:polygraph-viz:src/nl/answerer.ts:answerOnce,FT-SI2-01,Non-streaming chat answer
+fn:polygraph-viz:src/nl/answerer.ts:answerStream,FT-SI2-01,Streaming chat (SSE)
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.describe,FT-SI2-01,Bedrock SDK wrapper
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.embed,FT-SI2-01,Titan embedding
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chat,FT-SI2-01,Haiku non-stream
+fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream,FT-SI2-01,Haiku streaming
+fn:polygraph-viz:src/nl/embed-cache.ts:computeSnapshotHash,FT-SI2-01,Content-addressed cache
+fn:polygraph-viz:src/nl/embed-cache.ts:nodeSummaryText,FT-SI2-01,Per-node text for embedding
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk,FT-SI2-01,
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.saveToDisk,FT-SI2-01,
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.size,FT-SI2-01,
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.getAll,FT-SI2-01,
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.has,FT-SI2-01,
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.build,FT-SI2-01,Build cache by embedding every node
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.isStale,FT-SI2-01,
+fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.searchByEmbedding,FT-SI2-01,Cosine top-K retrieval
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load,FT-SI2-01,Save-This KB
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.save,FT-SI2-01,
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.size,FT-SI2-01,
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.add,FT-SI2-01,
+fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.search,FT-SI2-01,
+fn:polygraph-viz:src/nl/lexicon.ts:Lexicon.expand,FT-SI2-01,Per-domain lexicon expansion
+fn:polygraph-viz:src/nl/lexicon.ts:loadLexicon,FT-SI2-01,
+fn:polygraph-viz:src/nl/ranker.ts:computeSchemaFingerprint,FT-SI2-01,Schema-aware LLM rerank
+fn:polygraph-viz:src/nl/ranker.ts:rankWithLlm,FT-SI2-01,
+fn:polygraph-viz:src/nl/segment.ts:segmentsForNode,FT-SI2-02,biz/dom/imp classifier (seam doctrine)
+fn:polygraph-viz:src/nl/segment.ts:segmentForNode,FT-SI2-02,
+fn:polygraph-viz:src/nl/segment.ts:tallySegments,FT-SI2-02,
+fn:polygraph-viz:src/nl/segment.ts:sliceSegment,FT-SI2-02,Option-C layer slice with direction-aware boundary
+fn:polygraph-viz:src/server.ts:loadGraph,FT-SI-09,Server boot
+fn:polygraph-viz:src/server.ts:buildApp,FT-SI-09|FT-SI2-01,Hono app with NL endpoints

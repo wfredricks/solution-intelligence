@@ -1,0 +1,84 @@
+id,name,condition,behavior,fnId,sourceLineStart,sourceLineEnd
+af:solution-intelligence:sig-build/load/loaders/csv-loader.ts:parseCsv:guard,early-return guard,lines.length === 0,early return,fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:parseCsv,57,57
+af:solution-intelligence:sig-build/load/loaders/csv-loader.ts:isDuplicateError:guard,early-return guard,!err,early return,fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:isDuplicateError,140,140
+af:polygraph-viz:src/client/ui/chat.ts:installChat:guard,early-return guard,!opts.nlEnabled,early return,fn:polygraph-viz:src/client/ui/chat.ts:installChat,152,152
+af:polygraph-viz:src/client/ui/chat.ts:installChat:guard-2,early-return guard,!app,early return,fn:polygraph-viz:src/client/ui/chat.ts:installChat,156,156
+af:polygraph-viz:src/client/ui/chat.ts:installChat:try,try/catch in fn,thrown error,saveBtn.textContent = 'Save failed';,fn:polygraph-viz:src/client/ui/chat.ts:installChat,265,288
+af:polygraph-viz:src/client/ui/chat.ts:installChat:guard-3,early-return guard,!msg,early return,fn:polygraph-viz:src/client/ui/chat.ts:installChat,356,356
+af:polygraph-viz:src/client/ui/chat.ts:installChat:try-2,try/catch in fn,err,updateMessageText(,fn:polygraph-viz:src/client/ui/chat.ts:installChat,395,477
+af:polygraph-viz:src/client/ui/chat.ts:installChat:try-3,try/catch in fn,thrown error,catch + handle,fn:polygraph-viz:src/client/ui/chat.ts:installChat,437,442
+af:polygraph-viz:src/client/ui/chat.ts:installChat:try-4,try/catch in fn,thrown error,catch + handle,fn:polygraph-viz:src/client/ui/chat.ts:installChat,444,452
+af:polygraph-viz:src/client/ui/chat.ts:installChat:try-5,try/catch in fn,thrown error,catch + handle,fn:polygraph-viz:src/client/ui/chat.ts:installChat,457,463
+af:polygraph-viz:src/client/ui/chat.ts:installChat:guard-4,early-return guard,!v,early return,fn:polygraph-viz:src/client/ui/chat.ts:installChat,483,483
+af:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette:guard,early-return guard,kind === 'nodeId',early return,fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,258,263
+af:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette:guard-2,early-return guard,kind === 'segment',early return,fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,273,275
+af:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette:guard-3,early-return guard,list.length === 0 || index < 0 || index >= list.length,early return,fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,292,292
+af:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette:guard-4,early-return guard,!parsed,early return,fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,319,319
+af:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette:guard-5,early-return guard,missingRequired,early return,fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,324,324
+af:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette:try,try/catch in fn,err,"console.error('command failed:', err);",fn:polygraph-viz:src/client/ui/command-palette.ts:installCommandPalette,325,331
+af:polygraph-viz:src/client/ui/commands.ts:parseCommand:guard,early-return guard,!trimmed.startsWith('/'),early return,fn:polygraph-viz:src/client/ui/commands.ts:parseCommand,411,411
+af:polygraph-viz:src/client/ui/commands.ts:parseCommand:guard-2,early-return guard,!spec,early return,fn:polygraph-viz:src/client/ui/commands.ts:parseCommand,415,415
+af:polygraph-viz:src/client/ui/commands.ts:filterCommands:guard,early-return guard,p === '' || p === '/',early return,fn:polygraph-viz:src/client/ui/commands.ts:filterCommands,425,425
+af:polygraph-viz:src/client/ui/inspector.ts:clearInspector:guard,early-return guard,!aside,early return,fn:polygraph-viz:src/client/ui/inspector.ts:clearInspector,25,25
+af:polygraph-viz:src/client/ui/inspector.ts:showNode:guard,early-return guard,!aside,early return,fn:polygraph-viz:src/client/ui/inspector.ts:showNode,35,35
+af:polygraph-viz:src/client/ui/inspector.ts:showGroup:guard,early-return guard,!aside,early return,fn:polygraph-viz:src/client/ui/inspector.ts:showGroup,64,64
+af:polygraph-viz:src/client/ui/inspector.ts:pickDisplayName:guard,early-return guard,typeof candidate === 'string' && candidate.length > 0,early return,fn:polygraph-viz:src/client/ui/inspector.ts:pickDisplayName,100,102
+af:polygraph-viz:src/client/ui/inspector.ts:showEdge:guard,early-return guard,!aside,early return,fn:polygraph-viz:src/client/ui/inspector.ts:showEdge,115,115
+af:polygraph-viz:src/client/ui/inspector.ts:showAggregate:guard,early-return guard,!aside,early return,fn:polygraph-viz:src/client/ui/inspector.ts:showAggregate,161,161
+af:polygraph-viz:src/client/ui/inspector.ts:nodeMatches:guard,early-return guard,!query,early return,fn:polygraph-viz:src/client/ui/inspector.ts:nodeMatches,210,210
+af:polygraph-viz:src/client/ui/inspector.ts:nodeMatches:guard-2,early-return guard,node.id.toLowerCase().includes(q),early return,fn:polygraph-viz:src/client/ui/inspector.ts:nodeMatches,212,212
+af:polygraph-viz:src/client/ui/inspector.ts:nodeMatches:guard-3,early-return guard,node.labels.some((l) => l.toLowerCase().includes(q)),early return,fn:polygraph-viz:src/client/ui/inspector.ts:nodeMatches,213,213
+af:polygraph-viz:src/client/ui/inspector.ts:nodeMatches:guard-4,early-return guard,s.toLowerCase().includes(q),early return,fn:polygraph-viz:src/client/ui/inspector.ts:nodeMatches,217,217
+af:polygraph-viz:src/client/ui/palette.ts:primaryLabel:guard,early-return guard,labels.length === 0,early return,fn:polygraph-viz:src/client/ui/palette.ts:primaryLabel,85,85
+af:polygraph-viz:src/client/ui/stats.ts:renderStats:guard,early-return guard,!el,early return,fn:polygraph-viz:src/client/ui/stats.ts:renderStats,23,23
+af:polygraph-viz:src/client/ui/stats.ts:renderStats:try,try/catch in fn,thrown error,el.textContent = `${_graph.metadata.nodeCount} nodes · ${_graph.metadata.edge...,fn:polygraph-viz:src/client/ui/stats.ts:renderStats,25,45
+af:polygraph-viz:src/client/ui/theme.ts:installTheme:guard,early-return guard,!btn,early return,fn:polygraph-viz:src/client/ui/theme.ts:installTheme,48,48
+af:polygraph-viz:src/client/ui/theme.ts:installTheme:try,try/catch in fn,thrown error,catch + handle,fn:polygraph-viz:src/client/ui/theme.ts:installTheme,55,60
+af:polygraph-viz:src/client/ui/toolbar.ts:installToolbar:guard,early-return guard,!view || !isViewKey(view),early return,fn:polygraph-viz:src/client/ui/toolbar.ts:installToolbar,31,31
+af:polygraph-viz:src/client/views/force.ts:renderForce:guard,early-return guard,!source || !target,early return,fn:polygraph-viz:src/client/views/force.ts:renderForce,93,93
+af:polygraph-viz:src/client/views/force.ts:renderForce:guard-2,early-return guard,!original,early return,fn:polygraph-viz:src/client/views/force.ts:renderForce,159,159
+af:polygraph-viz:src/client/views/force.ts:renderForce:guard-3,early-return guard,next.width === width && next.height === height,early return,fn:polygraph-viz:src/client/views/force.ts:renderForce,421,421
+af:polygraph-viz:src/graph-api.ts:searchNodes:guard,early-return guard,String(value).toLowerCase().includes(lower),early return,fn:polygraph-viz:src/graph-api.ts:searchNodes,66,66
+af:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream:guard,early-return guard,!r.body,early return,fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream,168,168
+af:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream:try,try/catch in fn,thrown error,catch + handle,fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream,173,184
+af:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk:guard,early-return guard,!existsSync(this.cachePath),early return,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk,127,127
+af:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk:try,try/catch in fn,err,console.warn(`embed-cache: failed to load ${this.cachePath}: ${err}`);,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk,128,140
+af:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load:guard,early-return guard,!existsSync(this.path),early return,fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load,48,48
+af:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load:try,try/catch in fn,err,console.warn(`kb: failed to load ${this.path}: ${err}`);,fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load,49,54
+af:polygraph-viz:src/nl/kb.ts:KnowledgeBase.search:guard,early-return guard,qWords.size === 0,early return,fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.search,88,88
+af:polygraph-viz:src/nl/lexicon.ts:Lexicon.expand:guard,early-return guard,this.size === 0,early return,fn:polygraph-viz:src/nl/lexicon.ts:Lexicon.expand,64,64
+af:polygraph-viz:src/nl/lexicon.ts:Lexicon.expand:guard-2,early-return guard,matched.length === 0,early return,fn:polygraph-viz:src/nl/lexicon.ts:Lexicon.expand,72,72
+af:polygraph-viz:src/nl/lexicon.ts:loadLexicon:try,try/catch in fn,err,console.warn(`lexicon: failed to parse ${explicitPath}: ${err}`);,fn:polygraph-viz:src/nl/lexicon.ts:loadLexicon,92,99
+af:polygraph-viz:src/nl/lexicon.ts:loadLexicon:guard,early-return guard,!dominantDomain,early return,fn:polygraph-viz:src/nl/lexicon.ts:loadLexicon,116,118
+af:polygraph-viz:src/nl/ranker.ts:rankWithLlm:guard,early-return guard,hits.length === 0,early return,fn:polygraph-viz:src/nl/ranker.ts:rankWithLlm,126,126
+af:polygraph-viz:src/nl/ranker.ts:rankWithLlm:try,try/catch in fn,err,"console.warn('ranker: JSON parse failed, falling back to embed order', err);",fn:polygraph-viz:src/nl/ranker.ts:rankWithLlm,140,146
+af:polygraph-viz:src/nl/segment.ts:segmentsForNode:guard,early-return guard,primary.startsWith(pre),early return,fn:polygraph-viz:src/nl/segment.ts:segmentsForNode,59,59
+af:polygraph-viz:src/nl/segment.ts:segmentsForNode:guard-2,early-return guard,primary === 'sw.feature',early return,fn:polygraph-viz:src/nl/segment.ts:segmentsForNode,65,65
+af:polygraph-viz:src/nl/segment.ts:segmentsForNode:guard-3,early-return guard,"primary === 'sw.function' ||
+    primary === 'sw.module' ||
+    primary === 'sw.",early return,fn:polygraph-viz:src/nl/segment.ts:segmentsForNode,71,84
+af:polygraph-viz:src/nl/segment.ts:segmentForNode:guard,early-return guard,segs.has('biz'),early return,fn:polygraph-viz:src/nl/segment.ts:segmentForNode,124,124
+af:polygraph-viz:src/nl/segment.ts:segmentForNode:guard-2,early-return guard,segs.has('dom'),early return,fn:polygraph-viz:src/nl/segment.ts:segmentForNode,125,125
+af:polygraph-viz:src/nl/segment.ts:segmentForNode:guard-3,early-return guard,segs.has('imp'),early return,fn:polygraph-viz:src/nl/segment.ts:segmentForNode,126,126
+af:polygraph-viz:src/server.ts:loadGraph:guard,early-return guard,config.demo,early return,fn:polygraph-viz:src/server.ts:loadGraph,81,83
+af:polygraph-viz:src/server.ts:buildApp:guard,early-return guard,!bedrock,early return,fn:polygraph-viz:src/server.ts:buildApp,246,248
+af:polygraph-viz:src/server.ts:buildApp:guard-2,early-return guard,!text,early return,fn:polygraph-viz:src/server.ts:buildApp,251,253
+af:polygraph-viz:src/server.ts:buildApp:guard-3,early-return guard,text.length > 8000,early return,fn:polygraph-viz:src/server.ts:buildApp,254,256
+af:polygraph-viz:src/server.ts:buildApp:try,try/catch in fn,err,"console.error('embed failed:', err);",fn:polygraph-viz:src/server.ts:buildApp,257,271
+af:polygraph-viz:src/server.ts:buildApp:guard-4,early-return guard,!bedrock,early return,fn:polygraph-viz:src/server.ts:buildApp,282,284
+af:polygraph-viz:src/server.ts:buildApp:guard-5,early-return guard,!embedCacheReady,early return,fn:polygraph-viz:src/server.ts:buildApp,285,294
+af:polygraph-viz:src/server.ts:buildApp:guard-6,early-return guard,!query,early return,fn:polygraph-viz:src/server.ts:buildApp,297,299
+af:polygraph-viz:src/server.ts:buildApp:try-2,try/catch in fn,err,"console.error('nl-search failed:', err);",fn:polygraph-viz:src/server.ts:buildApp,304,336
+af:polygraph-viz:src/server.ts:buildApp:guard-7,early-return guard,!bedrock || !kb,early return,fn:polygraph-viz:src/server.ts:buildApp,353,355
+af:polygraph-viz:src/server.ts:buildApp:guard-8,early-return guard,!embedCacheReady,early return,fn:polygraph-viz:src/server.ts:buildApp,356,358
+af:polygraph-viz:src/server.ts:buildApp:guard-9,early-return guard,!query,early return,fn:polygraph-viz:src/server.ts:buildApp,364,364
+af:polygraph-viz:src/server.ts:buildApp:try-3,try/catch in fn,err,"frame('error', { detail: String(err) });",fn:polygraph-viz:src/server.ts:buildApp,392,408
+af:polygraph-viz:src/server.ts:buildApp:guard-10,early-return guard,!bedrock || !kb,early return,fn:polygraph-viz:src/server.ts:buildApp,427,429
+af:polygraph-viz:src/server.ts:buildApp:guard-11,early-return guard,!embedCacheReady,early return,fn:polygraph-viz:src/server.ts:buildApp,430,432
+af:polygraph-viz:src/server.ts:buildApp:guard-12,early-return guard,!query,early return,fn:polygraph-viz:src/server.ts:buildApp,438,438
+af:polygraph-viz:src/server.ts:buildApp:guard-13,early-return guard,!kb,early return,fn:polygraph-viz:src/server.ts:buildApp,470,472
+af:polygraph-viz:src/server.ts:buildApp:guard-14,early-return guard,!body.query || !body.answer,early return,fn:polygraph-viz:src/server.ts:buildApp,478,480
+af:polygraph-viz:src/server.ts:buildApp:guard-15,early-return guard,requested.length === 0,early return,fn:polygraph-viz:src/server.ts:buildApp,518,520
+af:polygraph-viz:src/server.ts:buildApp:guard-16,early-return guard,!kb,early return,fn:polygraph-viz:src/server.ts:buildApp,568,570
+af:polygraph-viz:src/server.ts:buildApp:guard-17,early-return guard,!existsSync(filePath),early return,fn:polygraph-viz:src/server.ts:buildApp,588,593
+af:polygraph-viz:src/server.ts:buildApp:guard-18,early-return guard,!existsSync(filePath),early return,fn:polygraph-viz:src/server.ts:buildApp,606,608

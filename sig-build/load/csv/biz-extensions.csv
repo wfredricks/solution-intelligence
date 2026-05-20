@@ -1,0 +1,40 @@
+# biz-extensions.csv — REQ-SI2-NNN, UC-SI2-N, FT-SI2-NN added 2026-05-20
+# for work that landed today beyond the v0.1 bookend. The SI2 namespace
+# marks these as candidates for promotion to the canonical REQ-SI-NNN
+# numbering in a future v0.2-bookend release.
+#
+# Three sections — separated by `kind` column:
+#   - kind=req:  intended_behavior (Tier-1) nodes
+#   - kind=uc:   sw.use_case (Tier-2) nodes
+#   - kind=ft:   sw.feature (Tier-2) nodes
+#
+# For req rows: id is the REQ-SI2-NNN; category is functional or non-functional
+# For uc rows:  id is UC-SI2-N; reqsExercised is a |-separated list of REQ ids
+# For ft rows:  id is FT-SI2-NN; reqsImplemented + ucsInvolved are |-separated
+#
+kind,id,title,summary,category,reqsExercised,reqsImplemented,ucsInvolved
+req,REQ-SI2-001,NL search over the SIG,Operator types a natural-language query and the system returns ranked nodes with graph-grounded 'why this matched' annotations. Powered by Bedrock Titan embeddings + Claude Haiku reranker.,functional,,,
+req,REQ-SI2-002,Multi-turn chat over the SIG,Operator carries a conversation across multiple turns; each assistant turn includes citations to graph nodes; conversation history is preserved per snapshot in localStorage.,functional,,,
+req,REQ-SI2-003,Graph-walking narrative,Chat answers anchor every claim to a node summary or edge in a one-hop subgraph snapshot. The LLM cannot return invented nodeIds (schema-aware ranker drops them).,functional,,,
+req,REQ-SI2-004,Save This convention,Operator saves a chat turn to a per-graph knowledge base; future queries auto-include matching KB entries as context.,functional,,,
+req,REQ-SI2-005,Per-domain lexicon expansion,Common-language queries are expanded with domain-specific synonyms before embedding. Lexicons are per-Tier-2-domain JSON files; defaults ship empty.,functional,,,
+req,REQ-SI2-006,Content-addressed embed cache,Per-graph embedding cache keyed by SHA-256 of sorted node ids; re-embeds only when snapshot or model changes; persisted alongside the graph data.,non-functional,,,
+req,REQ-SI2-007,Slash-command palette,Operator types '/' in any chat or search input and a combo-box dropdown lists every available command with description and category. Type-ahead filters by name; argument coaching shows graph-grounded examples.,functional,,,
+req,REQ-SI2-008,biz/dom/imp segment classifier,Every node is classified into one or more pipeline segments (biz, dom, imp, meta). Seam nodes (features biz↔dom; functions dom↔imp) inhabit two segments. Pure function; importable from client + server.,functional,,,
+req,REQ-SI2-009,Layer slice semantics,/biz /dom /imp commands show the named layer's segment members plus the outbound-edge boundary into the layer strictly deeper in the pipeline. Direction-aware so /dom does not re-expand back to biz via feature IMPLEMENTS edges.,functional,,,
+req,REQ-SI2-010,Hard membership filter,Renderers support a setFilter(keepIds) method that HIDES non-matching nodes (not dims). Distinct from focus() which expands via 1-hop neighborhood. Segment commands use setFilter; constellation commands use focus.,functional,,,
+req,REQ-SI2-011,Focus in Graph button on chat answers,Every chat assistant message has a 'Focus in Graph' button that multi-node-focuses all cited nodes in the active view; clicking again clears.,functional,,,
+req,REQ-SI2-012,Render Subgraph button on chat answers,Every chat assistant message has a 'Render Subgraph' button that opens a fresh view of just the cited nodes + their 1-hop neighbors via the /api/subgraph endpoint; back-to-full pill restores.,functional,,,
+req,REQ-SI2-013,Cited-node hyperlink citations,Backtick-wrapped node ids in chat messages render as clickable buttons that focus the constellation of that node in the active view.,functional,,,
+req,REQ-SI2-014,Sankey hit-area halo for thin links,Sankey link clicks now route reliably to the edge inspector via a transparent hit-area layer that sits above the visible ribbon but below the node rects.,non-functional,,,
+req,REQ-SI2-015,Deployment specifier rotation,An engagement SIG can be deployed against multiple paradigm targets by supplying an architectural constraints graph per target (cs_2026.*, sn_2026.*, next_2026.*). The Tier-2/Tier-3 boundary is the deploy seam.,functional,,,
+req,REQ-SI2-016,Configuration control mechanism,Every node carries provenance; every edge carries 'via'; every state-change emits an audit block attributed to actor.userId. The SIG version-controls both 'what the solution is' AND 'what the implementation is.',non-functional,,,
+req,REQ-SI2-017,Self-referential SIG (build SIG),Solution Intelligence models its own implementation in a build SIG that ingests its source files functions alt flows and call outs. Used to demonstrate the methodology against the substrate that proves it.,functional,,,
+uc,UC-SI2-1,Operator chats with the SIG to understand a feature,An operator opens the chat drawer asks 'Walk me through how SI provides audit and provenance from a user action through to verification' and receives a graph-walked narrative with 16 cited nodes; clicks Focus in Graph to see the constellation; clicks Save This to persist the answer.,,REQ-SI2-001|REQ-SI2-002|REQ-SI2-003|REQ-SI2-004|REQ-SI2-011|REQ-SI2-013,
+uc,UC-SI2-2,Operator slices the SIG by segment,An operator types /biz and sees only the biz layer (REQs + UCs + features); types /dom and sees only the dom layer (features + repos + stages + functions); the seam is visible because features appear in both. /imp says nothing-yet because Tier-3 is empty at this engagement's current stage.,,REQ-SI2-007|REQ-SI2-008|REQ-SI2-009|REQ-SI2-010,
+uc,UC-SI2-3,Operator traces a requirement to its implementation,An operator types /focus req:REQ-SI-070 and sees the constellation of features that implement that requirement and the functions in those features. Edge inspection on the IMPLEMENTS_INTENT_OF edges shows source file and line range.,,REQ-SI2-011|REQ-SI2-013,
+uc,UC-SI2-4,Owner clones a populated SIG to iLabs,An owner runs 'npm run clone:ilabs' from their local viewer to push the current build SIG state to the iLabs deployment so reviewers see the same graph the developer is working in.,,REQ-SI2-016,
+ft,FT-SI2-01,NL search and chat over the SIG,Bedrock-backed NL surface: Titan embeddings + Haiku reranker + graph-walking narrative + SSE streaming + Save This KB.,,,REQ-SI2-001|REQ-SI2-002|REQ-SI2-003|REQ-SI2-004|REQ-SI2-005|REQ-SI2-006|REQ-SI2-011|REQ-SI2-012|REQ-SI2-013,UC-SI2-1|UC-SI2-3
+ft,FT-SI2-02,Slash-command palette + segment slicing,Combo-box command palette with type-ahead and graph-grounded argument completion. biz/dom/imp/meta segments with seam doctrine. Hard membership filter distinct from constellation focus.,,,REQ-SI2-007|REQ-SI2-008|REQ-SI2-009|REQ-SI2-010,UC-SI2-2|UC-SI2-3
+ft,FT-SI2-03,Deployment specifier rotation,Per-paradigm architectural constraints graphs that engagement SIGs deploy against. The Tier-2/Tier-3 boundary is the deploy seam; same Tier-2 truth multiple paradigm-bound expressions.,,,REQ-SI2-015|REQ-SI2-016,
+ft,FT-SI2-04,Self-referential SIG fill-in (CSV ingest),AST-driven inventory of source repos producing dom + imp CSVs; reusable csv-loader.ts framework; load-fillin loader brings the methodology's own implementation into its own SIG.,,,REQ-SI2-017,

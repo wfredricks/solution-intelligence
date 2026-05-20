@@ -1,0 +1,47 @@
+id,target,kind,purpose,fnId,sourceLineStart,sourceLineEnd
+co:solution-intelligence:sig-build/load/loaders/csv-loader.ts:readCsv:fs,readFileSync,fs,sync file I/O,fn:solution-intelligence:sig-build/load/loaders/csv-loader.ts:readCsv,106,106
+co:polygraph-viz:src/client/ui/chat.ts:installChat:http,fetch,http,outbound HTTP,fn:polygraph-viz:src/client/ui/chat.ts:installChat,270,278
+co:polygraph-viz:src/client/ui/chat.ts:installChat:http-2,fetch,http,outbound HTTP,fn:polygraph-viz:src/client/ui/chat.ts:installChat,396,403
+co:polygraph-viz:src/client/ui/stats.ts:renderStats:http,fetch,http,outbound HTTP,fn:polygraph-viz:src/client/ui/stats.ts:renderStats,26,26
+co:polygraph-viz:src/nl/answerer.ts:answerOnce:sdk,bedrock.chat,sdk,Bedrock invocation,fn:polygraph-viz:src/nl/answerer.ts:answerOnce,209,212
+co:polygraph-viz:src/nl/answerer.ts:answerStream:sdk,bedrock.chatStream,sdk,Bedrock invocation,fn:polygraph-viz:src/nl/answerer.ts:answerStream,231,234
+co:polygraph-viz:src/nl/bedrock.ts:BedrockClient.embed:sdk,this.client.send,sdk,AWS SDK send,fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.embed,101,101
+co:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chat:sdk,this.client.send,sdk,AWS SDK send,fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chat,131,131
+co:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream:sdk,this.client.send,sdk,AWS SDK send,fn:polygraph-viz:src/nl/bedrock.ts:BedrockClient.chatStream,167,167
+co:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk:fs,existsSync,fs,sync file I/O,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk,127,127
+co:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk:fs-2,readFileSync,fs,sync file I/O,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.loadFromDisk,129,129
+co:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.saveToDisk:fs,writeFileSync,fs,sync file I/O,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.saveToDisk,151,151
+co:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.build:sdk,bedrock.describe,sdk,Bedrock invocation,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.build,176,176
+co:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.build:sdk-2,bedrock.embed,sdk,Bedrock invocation,fn:polygraph-viz:src/nl/embed-cache.ts:EmbedCache.build,185,185
+co:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load:fs,existsSync,fs,sync file I/O,fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load,48,48
+co:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load:fs-2,readFileSync,fs,sync file I/O,fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.load,50,50
+co:polygraph-viz:src/nl/kb.ts:KnowledgeBase.save:fs,writeFileSync,fs,sync file I/O,fn:polygraph-viz:src/nl/kb.ts:KnowledgeBase.save,59,59
+co:polygraph-viz:src/nl/lexicon.ts:loadLexicon:fs,existsSync,fs,sync file I/O,fn:polygraph-viz:src/nl/lexicon.ts:loadLexicon,88,88
+co:polygraph-viz:src/nl/lexicon.ts:loadLexicon:fs-2,readFileSync,fs,sync file I/O,fn:polygraph-viz:src/nl/lexicon.ts:loadLexicon,93,93
+co:polygraph-viz:src/nl/ranker.ts:rankWithLlm:sdk,bedrock.chat,sdk,Bedrock invocation,fn:polygraph-viz:src/nl/ranker.ts:rankWithLlm,131,135
+co:polygraph-viz:src/server.ts:loadGraph:http,fetch,http,outbound HTTP,fn:polygraph-viz:src/server.ts:loadGraph,89,89
+co:polygraph-viz:src/server.ts:buildApp:sdk,bedrock.describe,sdk,Bedrock invocation,fn:polygraph-viz:src/server.ts:buildApp,143,143
+co:polygraph-viz:src/server.ts:buildApp:sdk-2,bedrock.describe,sdk,Bedrock invocation,fn:polygraph-viz:src/server.ts:buildApp,178,178
+co:polygraph-viz:src/server.ts:buildApp:http,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,220,234
+co:polygraph-viz:src/server.ts:buildApp:http-2,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,235,235
+co:polygraph-viz:src/server.ts:buildApp:http-3,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,236,236
+co:polygraph-viz:src/server.ts:buildApp:http-4,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,237,240
+co:polygraph-viz:src/server.ts:buildApp:http-5,app.post,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,245,272
+co:polygraph-viz:src/server.ts:buildApp:sdk-3,bedrock.embed,sdk,Bedrock invocation,fn:polygraph-viz:src/server.ts:buildApp,258,258
+co:polygraph-viz:src/server.ts:buildApp:http-6,app.post,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,281,337
+co:polygraph-viz:src/server.ts:buildApp:sdk-4,bedrock.embed,sdk,Bedrock invocation,fn:polygraph-viz:src/server.ts:buildApp,306,306
+co:polygraph-viz:src/server.ts:buildApp:http-7,app.post,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,352,420
+co:polygraph-viz:src/server.ts:buildApp:sdk-5,bedrock.embed,sdk,Bedrock invocation,fn:polygraph-viz:src/server.ts:buildApp,371,371
+co:polygraph-viz:src/server.ts:buildApp:http-8,app.post,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,426,463
+co:polygraph-viz:src/server.ts:buildApp:sdk-6,bedrock.embed,sdk,Bedrock invocation,fn:polygraph-viz:src/server.ts:buildApp,443,443
+co:polygraph-viz:src/server.ts:buildApp:http-9,app.post,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,469,487
+co:polygraph-viz:src/server.ts:buildApp:http-10,app.post,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,508,565
+co:polygraph-viz:src/server.ts:buildApp:http-11,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,567,572
+co:polygraph-viz:src/server.ts:buildApp:http-12,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,574,577
+co:polygraph-viz:src/server.ts:buildApp:http-13,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,586,601
+co:polygraph-viz:src/server.ts:buildApp:fs,existsSync,fs,sync file I/O,fn:polygraph-viz:src/server.ts:buildApp,588,588
+co:polygraph-viz:src/server.ts:buildApp:fs-2,readFileSync,fs,sync file I/O,fn:polygraph-viz:src/server.ts:buildApp,597,597
+co:polygraph-viz:src/server.ts:buildApp:http-14,app.get,http,Hono route registration,fn:polygraph-viz:src/server.ts:buildApp,604,620
+co:polygraph-viz:src/server.ts:buildApp:fs-3,existsSync,fs,sync file I/O,fn:polygraph-viz:src/server.ts:buildApp,606,606
+co:polygraph-viz:src/server.ts:buildApp:fs-4,readFileSync,fs,sync file I/O,fn:polygraph-viz:src/server.ts:buildApp,611,611
+co:polygraph-viz:src/server.ts:buildApp:fs-5,readFileSync,fs,sync file I/O,fn:polygraph-viz:src/server.ts:buildApp,617,617
